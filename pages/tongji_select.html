@@ -1,0 +1,440 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/app.css" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_tongji_select">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/jquery-3.2.1.min.js"></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			function radio_change1(){
+				document.getElementById('quyu1').style.display = '';
+				document.getElementById('dandian1').style.display = 'none';				
+			}
+			function radio_change2(){
+				document.getElementById('dandian1').style.display = '';
+				document.getElementById('quyu1').style.display = 'none';	
+			}
+			
+			
+		</script>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title titletext">能耗报表  条件选择</h1>
+		</header>
+		<div class="mui-content">
+		    
+		    <div style="width: 100%;">
+				<div id="">
+					<form action="" method="post">
+						<div >
+							
+							
+									<div class=" mui-radio mui-left tjselectradio" >
+										<label class="commontext prt5px" >区域</label>
+										<input id="quyu" name="radio1" type="radio" onclick="radio_change1()">
+									</div>
+									<div class=" mui-radio mui-left tjselectradio" >
+										<label class="commontext prt5px" >单点</label>
+										<input id="dandian" name="radio1" type="radio" onclick="radio_change2()">
+									</div>
+							
+							<div style="height: 10px;"></div>
+							<table id="tongjiSelect_table" border="0" bordercolor="lightgrey"  cellspacing="0" cellpadding="0">
+								
+								
+								<tr >
+									<td width="20%" id="starttime" class="td_left commontext" >起始：</td>
+									<td width="80%" >
+										<div id="select4" class="inputstyle inputborder">
+											2017-07-01
+										</div>
+										<div class="div_btn" ><button id='start_btn' data-options='{"type":"date"}' class="btn btntext">选择</button></div>
+									</td>
+									
+								</tr>
+								
+									<tr style="height: 10px;">
+										<td></td>
+										<td></td>
+									</tr>
+									
+								<tr>
+									<td width="20%" id="overtime" class="td_left commontext" >结束：</td>
+									<td width="80%" >
+										<!--<input  id="select5" type="date" value=""/>-->
+										<div id="select5" class="inputstyle inputborder">
+											2017-07-01
+										</div>
+										<div class="div_btn" ><button id='over_btn' data-options='{"type":"date"}' class="btn btntext">选择</button></div>
+									</td>
+								</tr>
+								
+									<tr style="height: 10px;">
+										<td></td>
+										<td></td>
+									</tr>
+									
+								<tr id="quyu1">
+									<td width="20%" style="text-align: right;" class="commontext" >区域：</td>
+									<td width="80%" >
+										<select id="select1" class="quyu_dandian_display  commontext" >	
+											
+											<!--<option value="1" ></option>--> 
+										</select> 
+									</td>
+								</tr>
+									
+								<tr id="dandian1" style="display: none;">
+									<td width="20%" style="text-align: right;" class="commontext">设备点：</td>
+									<td width="80%">
+										<select id="select2" class="quyu_dandian_display  commontext" >	
+											
+											<!--<option value="1" ></option>--> 
+										</select> 
+									</td>
+								</tr>
+
+							</table>
+						
+						</div>
+						<div id="sub_btn" class=" commontext btnheight" >
+							<button type="button" id='sub' class="mui-btn mui-btn-primary commontext btnheight" data-loading-text = "提交中" data-loading-icon-position="right" >确定</button>
+						</div>
+					</form>
+					
+					
+				</div>
+			</div>
+		
+		
+		
+		</div>
+		
+		<script type="text/javascript">
+			
+			var select1 = document.getElementById("select1");
+			var select2 = document.getElementById("select2");
+
+			var select4 = document.getElementById("select4");
+			var select5 = document.getElementById("select5");
+			var mydate = new Date();
+			select5.value = mydate.toLocaleDateString();
+			
+			var quyu = document.getElementById("quyu");
+			var dandian = document.getElementById("dandian");
+			
+			//获得当天日期
+			function getNowFormatDate() {
+			    var date = new Date();
+			    var seperator1 = "-";
+			    var seperator2 = ":";
+			    var month = date.getMonth() + 1;
+			    var strDate = date.getDate();
+			    if (month >= 1 && month <= 9) {
+			        month = "0" + month;
+			    }
+			    if (strDate >= 0 && strDate <= 9) {
+			        strDate = "0" + strDate;
+			    }
+			    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+			            
+			    return currentdate;
+			}
+			
+			//获取当天日期前一个月日期
+			function getPreMonth(date) {  
+	            var arr = date.split('-');  
+	            var year = arr[0]; //获取当前日期的年份  
+	            var month = arr[1]; //获取当前日期的月份  
+	            var day = arr[2]; //获取当前日期的日  
+	            var days = new Date(year, month, 0);  
+	            days = days.getDate(); //获取当前日期中月的天数  
+	            var year2 = year;  
+	            var month2 = parseInt(month) - 1;  
+	            if (month2 == 0) {  
+	                year2 = parseInt(year2) - 1;  
+	                month2 = 12;  
+	            }  
+	            var day2 = day;  
+	            var days2 = new Date(year2, month2, 0);  
+	            days2 = days2.getDate();  
+	            if (day2 > days2) {  
+	                day2 = days2;  
+	            }  
+	            if (month2 < 10) {  
+	                month2 = '0' + month2;  
+	            }  
+	            var t2 = year2 + '-' + month2 + '-' + day2;  
+	            return t2;  
+	        } 
+		
+			//显示当前图表的起始时间和结束时间
+			select4.innerHTML = localStorage.getItem("select4_val");
+			select5.innerHTML = localStorage.getItem("select5_val");
+			
+			if(localStorage.getItem("select5_val") == null){
+				select5.innerHTML = getNowFormatDate();
+			}
+			
+			//缓存切换radio选中点
+			if(localStorage.getItem("areatype") != null){
+				switch(localStorage.getItem("areatype")){					
+					case '0' : 
+					quyu.checked = "checked";
+					dandian.checked ="";
+					break;				
+					case '1' :
+					quyu.checked = "";
+					dandian.checked ="checked";
+					document.getElementById('dandian1').style.display = '';
+					document.getElementById('quyu1').style.display = 'none';
+					break;					
+					default : alert("hehe");
+				}
+			}
+	
+		//	alert(mydate.toLocaleDateString());//可以获取当前日期
+			
+			//ajax
+			(function($) {
+			$.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			
+			
+				//日期选择器
+				var result = $('#result')[0];
+				var btns = $('.btn');
+				btns.each(function(i, btn) {
+					btn.addEventListener('tap', function() {
+
+						var btn_id = this.getAttribute('id');
+						
+						//设置dtpicker的默认值
+						
+						if(btn_id=="start_btn"){
+							var dtpickerDate = '{"type":"date","value":"'+localStorage.getItem("select4_val")+'"}';
+							console.log(dtpickerDate);
+							this.setAttribute('data-options',dtpickerDate);
+						}else if(btn_id=="over_btn"){
+							var dtpickerDate = '{"type":"date","value":"'+localStorage.getItem("select5_val")+'"}';
+							this.setAttribute('data-options',dtpickerDate);
+						}
+						var optionsJson = this.getAttribute('data-options') || '{}';
+						var options = JSON.parse(optionsJson);
+						
+						var picker = new $.DtPicker(options);
+						picker.show(function(rs) {
+							
+							
+							if(btn_id == "start_btn"){
+								var o_riqi_tjSelect = new Date(rs.text);
+								var o_lastday = new Date(localStorage.getItem("lastday"));
+								
+								if(o_riqi_tjSelect.getTime()>o_lastday.getTime()){
+									alert(localStorage.getItem("lastday")+"  之后没有数据");
+									return false;
+								}else{
+									select4.innerHTML = rs.text;	
+								}
+							}else if(btn_id == "over_btn"){
+								var o_riqi_tjSelect = new Date(rs.text);
+								var o_lastday = new Date(localStorage.getItem("lastday"));
+								
+								if(o_riqi_tjSelect.getTime()>o_lastday.getTime()){
+									alert(localStorage.getItem("lastday")+"  之后没有数据");
+									return false;
+								}else{
+									select5.innerHTML = rs.text;	
+								}
+								
+							}
+							
+							
+							
+								
+							
+							picker.dispose();
+						});
+					}, false);
+				});
+			
+			
+			
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+					//预加载历史记录页
+				/*	mui.preload({
+						url:'history.html',
+					    id:'history.html',
+					    styles:{  
+						      top:'0px',//新页面顶部位置  
+						      bottom:'51px',//新页面底部位置  
+						    //  width:newpage-width,//新页面宽度，默认为100%  
+						    //  height:newpage-height,//新页面高度，默认为100%  
+						    
+						    }
+					});*/
+					
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					} else {
+						//调用接口数据的入口方法
+						getList();
+					}
+				});
+			}
+			
+			function getList()
+			{
+				if(network){
+					ajax();
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			}
+			
+			//从c5_device获得数据并添加devicelist
+			var ajax = function() {
+				var t_preuri = plus.storage.getItem("g_preuri");
+				var url = t_preuri + "app_tongji_slt.php";  //测试服务器地址
+			//	var url = "http://192.168.46.10/changhai/app_devicelist.php";  //现场地址
+				//发送数据，随便填，反正返回的数据都是那个样
+				var data = {
+					name: "askh5.com",
+					author: "gzdayou",
+					description: "最好的HTML5社区..."
+				}; 
+			//	respnoseEl.innerHTML = '正在请求中...';
+				$.post(url, data, success, 'json');
+			};
+
+		//	var respnoseEl = document.getElementById("records_count");
+			var list = document.getElementById("list");
+			
+			//成功响应的回调函数
+			
+			var success = function(response) {
+				
+				var str = JSON.stringify(response);
+				//console.log(str);
+				
+				
+			//	respnoseEl.innerHTML = "总记录：" + response.count; 
+				mui.each(response.lou, function(key, elem) {
+				//	console.log("elem.name:" + elem.Address );
+				//	alert(elem.ComID);
+					var slt1 = document.createElement("option");
+					slt1.setAttribute("value",elem);
+					slt1.innerHTML = elem + "楼";
+					select1.appendChild(slt1);
+					
+				//	var slt = document.createElement("option");
+				//	slt.setAttribute("value",elem.Shijian);
+				//	slt.innerHTML = elem.Shijian;
+				//	select5.appendChild(slt);
+					
+				});
+				
+				mui.each(response.floor, function(key, elem) {
+
+					var slt2 = document.createElement("option");
+					slt2.setAttribute("value",elem);
+					slt2.innerHTML = elem + "层";
+					select2.appendChild(slt2);
+				});
+				
+				
+				//console.log("list" + list.innerHTML );
+				
+			};
+		
+			})(mui);
+				
+			/*	mui.plusReady(function () {
+					
+					//预加载tongji_select页
+					mui.preload({
+						url:'tongji.html',
+					    id:'tongji.html',
+					    styles:{  
+						      top:'0px',//新页面顶部位置  
+						      bottom:'51px',//新页面底部位置  
+						    //  width:newpage-width,//新页面宽度，默认为100%  
+						    //  height:newpage-height,//新页面高度，默认为100%  							    
+						    }
+					});	
+					
+					
+			});*/
+			
+				//‘确定’按钮点击事件
+				var historyPage = null;
+				//添加列表项的点击事件
+				mui('.mui-content').on('tap', '#sub', function(e) {
+					var webc = plus.webview.currentWebview();
+					var select1_val = select1.options[select1.selectedIndex].value;
+					var select2_val = select2.options[select2.selectedIndex].value;
+					var select4_val = select4.innerHTML;
+					var select5_val = select5.innerHTML;
+					
+					if(select4_val> select5_val){
+						alert("结束时间要比起始时间晚，请重新设定");
+						return false;
+					}
+					
+					var areatype = quyu.checked ? 0 : 1;
+					//alert(areatype );
+					
+					
+					
+					//获得tongji页面 
+				    tongjiPage = plus.webview.getWebviewById('tongji.html');
+				    
+				    //alert(tongjiPage);
+					//触发详情页面的newsId事件
+				  	mui.fire(tongjiPage,'newsIds',{
+				  		select1_val : select1_val,
+				  		select2_val : select2_val,
+				  		select4_val : select4_val,
+				  		select5_val : select5_val,
+				  		areatype    : areatype
+				    	
+				  	});
+				  	plus.webview.getWebviewById("tongji.html").reload();
+				  	
+					webc.close();
+				});
+					
+				//js根据选择字体大小改变文本
+				if(document.getElementById("style_set").getAttribute("href") == "../css/style_big.css"){
+					document.getElementById("starttime").innerHTML= "起始：";
+					document.getElementById("overtime").innerHTML= "结束：";
+					document.getElementById("start_btn").innerHTML= "选择";
+					document.getElementById("over_btn").innerHTML= "选择";
+					
+					
+				}
+					
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,317 @@
+{
+	"pages/history.html": {
+		"resources": [
+			"css/mui.min.css",
+			"css/diy.css",
+			"pages/detail.html",
+			"js/swiper-3.4.2.min.js",
+			"css/swiper-3.4.2.min.css",
+			"js/jquery-3.2.1.min.js",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"js/highcharts.js",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/detail.html",
+			"pages/time.html",
+			"pages/device.html"
+		]
+	},
+	"index.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"pages/main.html",
+			"pages/device.html",
+			"css/iconfont.css",
+			"fonts/iconfont.ttf",
+			"css/style_small.css",
+			"css/style_big.css",
+			"css/mui.css",
+			"css/style_medium.css"
+		],
+		"refer": [
+			"pages/device.html",
+			"pages/announcement.html",
+			"pages/main.html",
+			"pages/ajaxlist.html",
+			"pages/setting.html",
+			"device.html",
+			"pages/setting.php",
+			"pages/tongji.html",
+			"pages/analysis.html",
+			"pages/rank.html"
+		]
+	},
+	"pages/detail.html": {
+		"resources": [
+			"pages/history.html",
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"js/highcharts.js",
+			"js/jquery-3.2.1.min.js",
+			"css/style_small.css",
+			"css/style_big.css",
+			"css/style_medium.css"
+		],
+		"refer": [
+			"pages/history.html"
+		]
+	},
+	"pages/device.html": {
+		"resources": [
+			"pages/detail.html",
+			"css/mui.min.css",
+			"images/qq.png",
+			"images/logo.png",
+			"css/diy.css",
+			"images/shuibiao.jpg",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"images/1002.png",
+			"images/3001.png",
+			"images/3002.png",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/detail.html",
+			"pages/history.html"
+		]
+	},
+	"pages/main.html": {
+		"resources": [
+			"images/cbd.jpg",
+			"css/diy.css",
+			"images/muwu.jpg",
+			"images/yuantiao.jpg",
+			"images/shuijiao.jpg",
+			"css/mui.min.css",
+			"pages/ajaxlist.html",
+			"pages/test.html",
+			"images/u\u003d991400093,51305075\u0026fm\u003d26\u0026gp\u003d0.jpg",
+			"images/shuibiao.jpg",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"images/��.jpg",
+			"images/green_energy.jpg",
+			"images/green_energy2.jpg",
+			"images/green_energy1.jpg",
+			"images/green_energy3.jpg",
+			"pages/announcement_detail.html",
+			"APP ICO.png",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css",
+			"css/mui.css"
+		],
+		"refer": [
+			"pages/ajaxlist.html",
+			"pages/test.html",
+			"pages/device.html",
+			"pages/announcement.html",
+			"pages/tongji.html",
+			"pages/status.html",
+			"pages/alarm.html",
+			"pages/analysis.html",
+			"pages/announcement_detail.html",
+			"pages/setting.html",
+			"pages/rank.html"
+		]
+	},
+	"pages/ajaxlist.html": {
+		"resources": [
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"pages/announcement.html": {
+		"resources": [
+			"css/mui.min.css",
+			"pages/announcement_detail.html",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/style_small.css",
+			"css/style_big.css",
+			"css/style_medium.css"
+		],
+		"refer": [
+			"pages/announcement_detail.html"
+		]
+	},
+	"pages/announcement_detail.html": {
+		"resources": [
+			"css/mui.min.css",
+			"APP ICO.png",
+			"pages/main.html",
+			"css/diy.css",
+			"js/mui.min.js",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/main.html"
+		]
+	},
+	"login.html": {
+		"resources": [
+			"js/app.js",
+			"js/mui.min.js",
+			"images/sinaweibo.png",
+			"css/mui.min.css",
+			"css/style.css",
+			"images/weixin.png",
+			"images/qq.png",
+			"js/mui.enterfocus.js",
+			"fonts/mui.ttf",
+			"js/jquery.cookie.js",
+			"js/jquery-3.2.1.min.js"
+		],
+		"refer": [
+			"index.html"
+		]
+	},
+	"pages/setting.html": {
+		"resources": [
+			"images/logo.png",
+			"js/feedback.js",
+			"js/mui.view.js",
+			"css/mui.min.css",
+			"js/update.js",
+			"APP ICO.png",
+			"css/fontsize_medium.css",
+			"css/fontsize_small.css",
+			"css/fontsize_big.css",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css",
+			"js/mui.min.js"
+		],
+		"refer": [
+			"pages/setting_user.html"
+		]
+	},
+	"pages/test.html": {
+		"resources": [
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"pages/time.html": {
+		"resources": [
+			"css/mui.min.css",
+			"css/swiper-3.4.2.min.css",
+			"css/diy.css",
+			"fonts/mui.ttf",
+			"js/jquery-3.2.1.min.js",
+			"js/swiper-3.4.2.min.js",
+			"js/mui.min.js",
+			"js/highcharts.js",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/detail.html"
+		]
+	},
+	"pages/setting.php": {
+		"resources": [
+			"images/logo.png",
+			"css/mui.min.css",
+			"js/feedback.js",
+			"js/mui.view.js"
+		],
+		"refer": []
+	},
+	"pages/tongji.html": {
+		"resources": [
+			"css/mui.min.css",
+			"libs/echarts-all.js",
+			"css/diy.css",
+			"css/mui.picker.min.css",
+			"js/mui.picker.min.js",
+			"js/jquery.min.js",
+			"js/highcharts.js",
+			"js/mui.min.js",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/tongji_select.html"
+		]
+	},
+	"pages/status.html": {
+		"resources": [
+			"css/mui.min.css",
+			"css/diy.css",
+			"css/style_small.css",
+			"css/style_big.css",
+			"css/style_medium.css"
+		],
+		"refer": [
+			"pages/detail.html"
+		]
+	},
+	"pages/alarm.html": {
+		"resources": [
+			"css/mui.min.css",
+			"css/style_medium.css",
+			"css/style_small.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/detail.html"
+		]
+	},
+	"pages/analysis.html": {
+		"resources": [
+			"css/mui.min.css",
+			"images/3002.png",
+			"images/3001.png",
+			"images/1002.png"
+		]
+	},
+	"pages/tongji_select.html": {
+		"resources": [
+			"css/mui.min.css",
+			"js/jquery-3.2.1.min.js",
+			"css/mui.picker.min.css",
+			"js/mui.picker.min.js",
+			"css/style_small.css",
+			"css/style_big.css",
+			"css/style_medium.css"
+		],
+		"refer": [
+			"pages/tongji.html"
+		]
+	},
+	"pages/rank.html": {
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.picker.min.js",
+			"css/mui.picker.min.css",
+			"css/style_small.css",
+			"css/style_medium.css",
+			"css/style_big.css"
+		],
+		"refer": [
+			"pages/detail.html",
+			"pages/history.html"
+		]
+	},
+	"pages/setting_user.html": {
+		"resources": [
+			"css/mui.min.css",
+			"css/style_medium.css"
+		]
+	}
+}

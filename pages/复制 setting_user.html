@@ -1,0 +1,263 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script >
+		
+		<script type="text/javascript">
+			//mui.plusReady(Function(){
+			
+				
+			
+			
+			if(localStorage.getItem("userlist_user") == null){
+				
+				var arr= new Array();
+				arr["user"]=new Array();
+				arr["password"]=new Array();
+				arr["user"][0] = localStorage.getItem("account");
+				arr["password"][0] = localStorage.getItem("password");
+				localStorage.setItem("userlist_user",JSON.stringify(arr["user"]));
+				localStorage.setItem("userlist_password",JSON.stringify(arr["password"]));
+				
+				console.log("666");
+			}
+			//})
+		</script>
+		
+		
+	</head>
+
+	<body>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+				<span class="mui-icon mui-icon-left-nav"></span>设置
+			</button>		    
+		    <h1 class="mui-title titletext">用户</h1>
+		</header>
+		<div class="mui-content">
+		    <div style="margin-top: 10%;">
+		    	<div id="" class="commontext mgn10pct" >
+		    		新账号登录:
+		    	</div>
+		    	
+				<form id='login-form' class="mui-input-group mgn10pct" >
+					<div class="mui-input-row">
+						<label class="commontext">账号</label>
+						<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入账号">
+					</div>
+					<div class="mui-input-row">
+						<label class="commontext">密码</label>
+						<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+					</div>
+				</form>
+		    	<button type="button" id='sub' style="width: 80%;" class="mui-btn mui-btn-primary commontext btnheight btnheight mgn10pct" data-loading-text = "提交中" data-loading-icon-position="right" >确定</button>
+		    </div>
+		    
+		    <ul id="userlist_ul" class="mui-table-view mui-table-view-chevron mgn10pct" >
+		    	<!--<li id="userlist" class="userlist mui-table-view-cell commontext liheight" style="text-align: left;">
+		    		
+				</li>-->
+			</ul>
+		</div>
+
+		<script type="text/javascript">
+			(function($) {
+			var network = true;
+			mui.plusReady(function(){
+
+				//setting页添加当前登录用户名
+				var s_user = plus.storage.getItem("g_user");
+				var userlist = document.getElementById("userlist");
+				//user.innerHTML = '当前登录：' + s_user;
+				
+				var userlist_user = JSON.parse(localStorage.getItem("userlist_user"));
+				var userlist_password = JSON.parse(localStorage.getItem("userlist_password"));
+				var userlist_ul = document.getElementById("userlist_ul");
+				console.log(userlist_user + ":" + userlist_password);
+				console.log(userlist_user.length);
+				
+				var li = document.createElement("li");
+				li.className = "mui-table-view-cell commontext liheight";
+				li.setAttribute("userlist_password",localStorage.getItem("password"));
+				li.innerHTML = '当前登录：' + s_user;
+				userlist_ul.appendChild(li);
+				
+				
+				for(i=0;i<userlist_user.length;i++){
+					var li = document.createElement("li");
+					li.className = "userlist mui-table-view-cell commontext liheight";
+					li.setAttribute("userlist_user",userlist_user[i]);
+					li.setAttribute("userlist_password",userlist_password[i]);
+					
+					li.innerHTML = '历史登录：' + userlist_user[i];
+					
+					userlist_ul.appendChild(li);
+				}
+				mui('.mui-content').on('tap', '.userlist', function(e) {
+					
+					console.log(this.getAttribute("userlist_password"));
+					
+				});
+				
+				
+				
+				mui('.mui-content').on('tap', '#sub', function(e) {
+					
+				
+				
+					//获取输入内容
+					var user = document.getElementById("account").value;
+					var pwd = document.getElementById("password").value;
+					
+					//简易验证
+					if(user.length==0){
+	                    plus.ui.toast("用户名不能为空");
+	                    return;
+	               	}
+
+					//ajax
+					function getList()
+					{
+						if(network){
+						
+							ajax();
+						}else{
+							mui.toast("当前网络不给力，请稍后再试");
+						}
+					}
+					
+					
+					var ajax = function() {
+						if(plus.storage.getItem("g_preuri")){
+							var url = plus.storage.getItem("g_preuri") + "app_login.php";
+						}else{
+							var url = "http://139.196.53.2/changhai/app_login.php";  //测试服务器地址
+						}
+						
+					//	var url = "http://192.168.46.10/changhai/app_detail.php";  //现场地址
+						//发送数据，随便填，反正返回的数据都是那个样
+					//	alert(user);
+						var data = {
+								user:user,
+								pwd:pwd,
+							}; 
+							
+							var list = document.getElementById("list");
+							//成功响应的回调函数
+							var success = function(response) {
+							//console.log(response.lastday);
+								if(response.mystatus == "yes"){
+									plus.ui.toast("切换用户成功");
+									plus.storage.setItem("g_preuri","http://139.196.53.2/changhai/");//缓存网址
+									plus.storage.setItem("g_user",response.Name);//缓存用户名
+									
+									localStorage.setItem("account",response.Name);//本地缓存用户名
+									localStorage.setItem("password",pwd);//本地缓存密码
+									localStorage.setItem("lastday",response.lastday);//本地缓存最后数据库有数据的日期
+									
+									if(localStorage.getItem("autologinButtonStatus")== null){
+										localStorage.setItem("autologin_status",'true');
+									}
+									
+									
+									
+									
+									
+									
+									//缓存登录过的账号
+									arr= new Array();
+									arr["user"]=new Array();
+									arr["password"]=new Array();
+									arr["user"] = JSON.parse(localStorage.getItem("userlist_user"));
+									arr["password"] = JSON.parse(localStorage.getItem("userlist_password"));
+									
+									
+									for(i in arr["user"]){
+										if(arr["user"][i] == response.Name){
+											arr["user"].splice(i,1);
+											
+										}
+										console.log("user i="+ i);
+									}
+									arr["user"][arr["user"].length] = response.Name;
+									localStorage.setItem("userlist_user",JSON.stringify(arr["user"]));
+									
+									
+									for(i in arr["password"]){
+										if(arr["password"][i] == document.getElementById("password").value){
+											arr["password"].splice(i,1);
+											
+										}
+										console.log("password i="+ i);
+									}
+									arr["password"][arr["user"].length-1] = document.getElementById("password").value;
+									localStorage.setItem("userlist_password",JSON.stringify(arr["password"]));
+									
+									console.log(arr["user"]+':'+arr["password"]);
+									
+									
+									
+									
+									
+									
+									
+									
+									//重载所有界面
+									mui.plusReady(function(){
+										
+										var wvs = plus.webview.all();
+										for (var i = 0, len = wvs.length; i < len; i++) {
+											//console.log(wvs[i].id);
+											plus.webview.getWebviewById(wvs[i].id).reload();
+										}
+									})
+									
+									//打开index页面  index.html        
+									//mui.openWindow({
+									//  url:'main.html',
+									//  id:'main.html',
+									    
+									//});
+									
+							
+									
+								}else{
+									if(response.mystatus == "pwd error"){
+										plus.ui.toast("密码错误");
+									}else if(response.mystatus == "no user"){
+										plus.ui.toast("用户名不存在");
+									}else{
+										plus.ui.toast("登录验证失败！！");
+									}
+									
+								}
+	
+							};	
+					//	respnoseEl.innerHTML = '正在请求中...';
+						$.post(url, data, success, 'json');
+					};	
+					getList();
+				
+				
+				
+				});
+			});
+			})(mui);
+		</script>
+
+	</body>
+</html>

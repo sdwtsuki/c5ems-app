@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_rank">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			//主页返回键处理
+			var oldBack = mui.back;
+			//var backButtonPress = 0;
+			mui.back = function(event) {
+				if(plus.storage.getItem("from")=="home"){
+					indexPage = plus.webview.getWebviewById('index.html');
+					mui.fire(indexPage,'newsIds',{
+				    	id:'main'
+				    });
+					oldBack();	
+				}else{
+					/*
+					backButtonPress++;
+				    if (backButtonPress > 1) {
+				        plus.runtime.quit();
+				    } else {
+				        plus.nativeUI.toast('再按一次退出应用');
+				    }
+				    setTimeout(function() {
+				        backButtonPress = 0;
+				    }, 1000);
+				    return false;
+				    */
+					var btn = ["确定","取消"];
+					mui.confirm('确认关闭程序？','退出',btn,function(e){
+						if(e.index==0){
+							//mui.currentWebview.close();
+							plus.runtime.quit();
+						}
+					});
+				}
+			};
+			
+		</script>
+		<header class="mui-bar mui-bar-nav">
+		    
+		    <h1 class="mui-title titletext">能耗排行</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="" >
+				<div id="div_riqiselect" class="baohanjuzhong" style="padding:10px 10px 10px 10px;height:65px;">
+					<div>
+						<div id="riqiSelect_rank" class="inputstyle inputborder" style="float:left;">
+							2017-07-01
+						</div>
+						<div id="riqiSelect_btn" style="float:left;margin-left:5px;">
+							<button id='' data-options='{"type":"date"}' class="btn btntext">选择</button>
+						</div>
+					</div>
+				</div>
+				
+				
+				<div class="div_table">
+					<table id="list" class="" border="0" cellspacing="" cellpadding="" >
+						<tr>
+							<td class="table_td_title"></td>
+							<td class="table_td_title"></td>
+							<td class="table_td_title"></td>
+						</tr>
+					</table>
+				</div>
+				
+				
+				
+			    <!--<ul id="list" class="mui-table-view mui-table-view-chevron commontext">
+	            	<li class="mui-table-view-cell mui-media">
+							<div class="rank_div1" >
+								排名
+							</div>
+							
+							<div class="rank_div2">
+								地址
+							</div>
+							
+							<div class="rank_div3">
+								能耗量
+							</div>
+							
+					</li>
+				</ul>-->
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig:{
+				    swipe: false, //关闭右划
+				}
+			})
+			
+			
+			mui.plusReady(function () {
+						
+				mui.preload({
+					url:'detail.html',
+				    id:'detail.html',
+				    styles:{  
+					    top:'0px',//新页面顶部位置  
+					    bottom:'51px',//新页面底部位置  
+					}
+				});
+				
+			});
+			
+			//ajax
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				
+				//返回当天日期的函数
+				function getNowFormatDate() {
+				    var date = new Date();
+				    var seperator1 = "-";
+				    var month = date.getMonth() + 1;
+				    var strDate = date.getDate();
+				    if (month >= 1 && month <= 9) {
+				        month = "0" + month;
+				    }
+				    if (strDate >= 0 && strDate <= 9) {
+				        strDate = "0" + strDate;
+				    }
+				    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+				            
+				    return currentdate;
+				}
+
+				var riqi_rank = "";
+				if(localStorage.getItem("riqi_rank") ==null){
+					riqi_rank = localStorage.getItem("lastday");
+					document.getElementById("riqiSelect_rank").innerHTML = riqi_rank;
+					
+				}else if(localStorage.getItem("riqi_rank") != null){
+					document.getElementById("riqiSelect_rank").innerHTML = localStorage.getItem("riqi_rank");
+					riqi_rank = localStorage.getItem("riqi_rank");
+				}
+				
+				//日期选择,并提交日期到服务器
+				var result = $('#result')[0];
+				var btns = $('.btn');
+				btns.each(function(i, btn) {
+					btn.addEventListener('tap', function() {
+						
+						//设置dtpicker的默认值
+						//var dtpickerDate = '{"type":"date","value":"'+localStorage.getItem("riqi_rank")+'"}';
+						var dtpickerDate = '{"type":"date","value":"'+riqi_rank+'"}';
+						this.setAttribute('data-options',dtpickerDate);
+						
+						
+						var optionsJson = this.getAttribute('data-options') || '{}';
+						var options = JSON.parse(optionsJson);
+						//var id = this.getAttribute('id');
+						var riqiSelect_rank = document.getElementById("riqiSelect_rank");
+						/*
+						 * 首次显示时实例化组件
+						 * 示例为了简洁，将 options 放在了按钮的 dom 上
+						 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+						 */
+						var btn_id = this.getAttribute('id');
+						
+						var picker = new $.DtPicker(options);
+						
+						picker.show(function(rs) {
+							
+							riqiSelect_rank.setAttribute("riqi_rank",rs.text);
+							
+							
+							
+							riqi_rank = riqiSelect_rank.getAttribute("riqi_rank")
+							
+							
+							
+							var o_riqi_rank = new Date(riqi_rank);
+							var o_lastday = new Date(localStorage.getItem("lastday"));
+							if(o_riqi_rank.getTime()>o_lastday.getTime()){
+								alert(localStorage.getItem("lastday")+"  之后没有数据");
+								return false;
+							}else{
+								riqiSelect_rank.innerHTML = rs.text;
+								localStorage.setItem("riqi_rank",riqi_rank);
+								getRank(riqi_rank);
+							}
+
+							picker.dispose();
+						});
+					}, false);
+				});
+				
+				var network = true;
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						
+						mui.preload({
+							url:'detail.html',
+						    id:'detail.html',
+						    styles:{  
+							    top:'0px',//新页面顶部位置  
+							    bottom:'51px',//新页面底部位置  
+							}
+						});
+						
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						} else {
+							//调用接口数据的入口方法
+							
+							getRank(riqi_rank);
+						}
+						
+					});
+				}
+				
+				function getRank(riqi_rank)
+				{
+					if(network){
+						ajax(riqi_rank);
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+				//从c5_device获得数据并添加devicelist
+				var ajax = function(riqi_rank) {
+					//console.log(riqi_rank);
+					var t_preuri = plus.storage.getItem("g_preuri");
+					var url = t_preuri + "app_rank.php";  //测试服务器地址
+					var t_user = plus.storage.getItem("g_user");
+					var data = {
+						sch: localStorage.getItem("sch"),
+						user : t_user,
+						riqi :riqi_rank
+					}; 
+				//	respnoseEl.innerHTML = '正在请求中...';
+					$.post(url, data, success, 'json');
+				};
+
+				var list = document.getElementById("list");
+
+				//成功响应的回调函数
+				var success = function(response) {
+					var str = JSON.stringify(response);
+					//console.log(str);
+					var parcount = response.parcount; 
+					list.setAttribute('width',response.tablewidth);
+					list.innerHTML = "";
+
+				//	respnoseEl.innerHTML = "总记录：" + response.count; 
+					var row = 0 ;
+					mui.each(response.records, function(key, elem) {
+
+						var tr = document.createElement("tr");
+						//tr.className = "table_tr";
+						tr.setAttribute("attri_comid",elem.ComID);
+						tr.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+						//li.setAttribute("name",elem.Address +','+ elem.energytype);
+						list.appendChild(tr);
+
+						for(var i=0;i<parcount;i++){
+							var td = document.createElement("td");
+							if (row==0){
+								td.setAttribute("class",'table_td_title');
+							}else{
+								td.setAttribute("class",'table_td_content');
+							}
+							
+							j = i + 1;
+							var t_par = "par0"+j;
+							td.innerHTML = elem[t_par];
+							tr.appendChild(td);
+								
+						}
+						row = row + 1;
+					});
+				};
+			
+			})(mui);
+
+			//添加列表项的点击事件
+			mui('.mui-content').on('tap', 'tr', function(e) {
+				var detailPage = plus.webview.getWebviewById('detail.html');
+			    var f_comid = this.getAttribute('attri_comid');
+			    var f_pars  = this.getAttribute('attri_pars');
+			    //console.log(f_comid);
+			    //获得历史页面
+			    //if(!historyPage){
+			    //	historyPage = plus.webview.getWebviewById('history.html');
+			    //}
+			    //触发detail页面的newsId事件
+			    mui.fire(detailPage,'Parameters',{
+			    	r_comid:f_comid,
+			    	r_pars:f_pars
+			    });
+				//打开历史页面  history.html        
+			  	mui.openWindow({
+			  		url:'detail.html',
+			    	id:'detail.html'
+			  	});
+			
+			});
+				
+			
+			
+		</script>	
+	</body>
+</html>

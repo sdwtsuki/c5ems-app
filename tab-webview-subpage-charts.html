@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>能耗首页</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<style>
+			.chart {
+				height: 200px;
+				margin: 0px;
+				padding: 0px;
+			}
+			h5 {
+				margin-top: 30px;
+				font-weight: bold;
+			}
+			h5:first-child {
+				margin-top: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="mui-content-padded">
+				<p style="text-indent: 22px;">
+					此为演示界面,数据仅供参考
+				</p>
+			</div>
+			<div class="mui-content-padded">
+				<h5>月度环比</h5>
+				<div class="chart" id="barChart"></div>
+				<!--<h5>能耗趋势</h5>
+				<div class="chart" id="lineChart"></div>-->
+				<h5>能耗分项</h5>
+				<div class="chart" id="pieChart"></div>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="libs/echarts-all.js"></script>
+		<script>
+			var getOption = function(chartType) {
+				var chartOption = chartType == 'pie' ? {
+					calculable: false,
+					series: [{
+						name: '访问来源',
+						type: 'pie',
+						radius: '65%',
+						center: ['50%', '50%'],
+						data: [{
+							value: 735,
+							name: '研发部'
+						}, {
+							value: 310,
+							name: '生产部'
+						}, {
+							value: 135,
+							name: '行政部'
+						}, {
+							value: 548,
+							name: '营销部'
+						}]
+					}]
+				} : {
+					legend: {
+						data: ['上年', '本年']
+					},
+					grid: {
+						x: 35,
+						x2: 10,
+						y: 30,
+						y2: 25
+					},
+					toolbox: {
+						show: false,
+						feature: {
+							mark: {
+								show: true
+							},
+							dataView: {
+								show: true,
+								readOnly: false
+							},
+							magicType: {
+								show: true,
+								type: ['line', 'bar']
+							},
+							restore: {
+								show: true
+							},
+							saveAsImage: {
+								show: true
+							}
+						}
+					},
+					calculable: false,
+					xAxis: [{
+						type: 'category',
+						data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+					}],
+					yAxis: [{
+						type: 'value',
+						splitArea: {
+							show: true
+						}
+					}],
+					series: [{
+						name: '上年',
+						type: chartType,
+						data: [2800, 1100, 2800, 2400, 2560, 2767, 2135, 2962, 3326, 2200, 2164, 3433]
+					}, {
+						name: '本年',
+						type: chartType,
+						data: [3200, 1000, 2800, 2640, 2870, 2707, 2175, 2982, 3487, 2188, 2160, 3563]
+					}]
+				};
+				return chartOption;
+			};
+			var byId = function(id) {
+				return document.getElementById(id);
+			};
+			var barChart = echarts.init(byId('barChart'));
+			barChart.setOption(getOption('bar'));
+			//var lineChart = echarts.init(byId('lineChart'));
+			//lineChart.setOption(getOption('line'));
+			var pieChart = echarts.init(byId('pieChart'));
+			pieChart.setOption(getOption('pie'));
+//			byId("echarts").addEventListener('tap',function(){
+//				var url = this.getAttribute('data-url');
+//				plus.runtime.openURL(url);
+//			},false);
+		</script>
+	</body>
+
+</html>

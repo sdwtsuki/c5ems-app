@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<link rel="stylesheet" type="text/css" href="../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_tongji">
+		<script src="../js/mui.min.js"></script>
+		
+		<script>
+			mui.init({
+				gestureConfig:{
+				    swipe: false, //关闭右划
+				}
+			})
+			//开头重写mui.back防止出现空白页
+			var oldBack = mui.back;
+			mui.back = function(){}
+			
+			mui.plusReady(function () {
+				
+				//预加载页
+				mui.preload({
+					url:'tongji_select.html',
+				    id:'tongji_select.html',
+				    styles:{  
+					      top:'0px',//新页面顶部位置  
+					      bottom:'51px',//新页面底部位置  
+					    //  width:newpage-width,//新页面宽度，默认为100%  
+					    //  height:newpage-height,//新页面高度，默认为100%  							    
+					    }
+				});	
+				
+			});
+			
+			
+		</script>
+	
+		<header class="mui-bar  mui-bar-nav">
+		    
+		    <h1 class="mui-title titletext">能耗报表</h1>
+		    <a id="openselectpage" class="mui-pull-right tabtext mt10px"  >条件选择</a>
+		</header>
+		<div class="mui-content">
+		    
+			<div>
+				
+				<div class="mui-content-padded">
+					<h5 id= 'tongji_title'>月度环比</h5>
+					<div class="chart" id="mychartcontainer"></div>
+				</div>
+				
+				<div class="div_table" >
+					<table id="tj_table" class="" border="0" cellspacing="" cellpadding="" >
+						
+						<!--<tr>
+							<td  class="table_td_content" >2017-06-15</td>
+							<td  class="table_td_content" >233</td>
+						</tr>-->
+					</table>
+				</div>
+				
+				<div style="height: 20px;">
+					
+				</div>
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+
+		<script src="../js/jquery.min.js" type="text/javascript" language="javascript"></script>
+		<script src="../js/highcharts.js"></script>
+		<!--图表script-->
+	<script type="text/javascript">
+		var getOption = function(chartType) {
+			var mychart = new Highcharts.Chart({  
+					chart: {  
+						renderTo: 'mychartcontainer',  
+						type: 'column',  
+						spacingTop: 20,            //图表上方的空白
+						spacingRight: 0,
+						spacingBottom: 10,
+						spacingtop: 0,
+						marginRight: 10,            //上下左右空隙(图表跟图框之间)
+						borderColor:"#b5d6e6",
+						borderRadius: 5,            //图框的圆角大小
+						borderWidth: 0,             //图框的边框大小
+					},  
+					title:{  
+						text: ''  
+					},  
+					plotOptions:{  
+						column: {  
+							depth: 25  
+						}  
+					},  
+					credits:{  
+						enabled:false  
+					},  
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+							'<td style="padding:0"><b>{point.y:.1f} {point.name}</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							showInLegend: false
+						},
+						spline:{
+							showInLegend: false
+						},
+						column: {
+							allowPointSelect: true, //允许选中，点击选中的扇形区可以分离出来显示
+							cursor: 'pointer',  //当鼠标指向扇形区时变为手型（可点击）
+							//borderRadius:50,
+							showInLegend: false,  //如果要显示图例，可将该项设置为true
+							//stacking: 'normal',
+							dataLabels: {
+								enabled: false,
+								rotation: -90,
+								color: '#FFFFFF',
+								align: 'right',
+								x: 4,
+								y: 10,
+								style: {
+									fontSize: '13px',
+									fontFamily: 'Verdana, sans-serif',
+									textShadow: '0 0 3px black'
+								},
+								formatter: function() {
+									return this.y;
+								},
+							}
+						}
+					},
+					xAxis:{   
+						categories:[],  //["07-16","07-17","07-18","07-19"]
+						labels: {
+							rotation: -35,
+							align: 'right',
+							style: {
+								fontSize: '12px',
+								fontFamily: 'Verdana, sans-serif'
+							}
+						}
+					},  
+					yAxis:{  
+						title:{  
+							enabled: true,  
+							text: ''  
+						}  
+					},  
+					series:  [{"name":"\u4e0a\u5e74","data":[]}]
+				});  
+			return mychart;					
+		};
+		mychart = getOption('bar');
+	</script>
+
+	<script type="text/javascript">
+		
+		var tj_table = document.getElementById("tj_table");
+
+		if(mui.os.plus){
+			mui.plusReady(function () {	
+			});
+		};
+	
+		//var detailPage = null;
+		//添加'条件选择'的点击事件
+		mui('.mui-bar').on('tap', '#openselectpage', function(e) {
+			//console.log("点击了“条件选择”");
+		  	//获得页面
+		  	//if(!detailPage){
+		    	//detailPage = plus.webview.getWebviewById('tongji_select.html');
+				//    alert(detailPage);
+		  	//}
+		
+			//打开tongji_select.html        
+		  	mui.openWindow({
+		  		url:'tongji_select.html',
+		    	id:'tongji_select.html',
+		    	styles:{
+		    		top:'0px',//新页面顶部位置  
+			    	bottom:'51px',//新页面底部位置  
+		    	},
+				show:{
+				  	autoShow:true,//页面loaded事件发生后自动显示，默认为true
+				  	aniShow:"slide-in-right",//页面显示动画，默认为”slide-in-right“；
+					duration:300//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+				}
+		    
+		  	});
+			
+		});
+		
+	    //ajax
+		(function($) {
+			$.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					} else {
+						//调用接口数据的入口方法
+						getList();
+						
+					}
+				});
+			}
+			
+			//设置若缓存为null时的初值
+			if(localStorage.getItem('select4_val') == null){
+				localStorage.setItem('select4_val',"2017-06-15");//
+			}
+			if(localStorage.getItem('select5_val') == null){
+				localStorage.setItem('select5_val',"2017-07-02");//
+			}
+			if(localStorage.getItem('areatype') == null){
+				localStorage.setItem('areatype',0);//
+			}
+				
+				
+			//添加newId自定义事件监听（从tongji_select页得到的选中项）
+			window.addEventListener('newsIds',function(event){
+			  //获得事件参数
+				var select1_val = event.detail.select1_val;
+				var select2_val = event.detail.select2_val;
+				var select4_val = event.detail.select4_val;
+				var select5_val = event.detail.select5_val;
+				var areatype = event.detail.areatype;
+				
+				localStorage.setItem('select4_val',select4_val);
+				localStorage.setItem('select5_val',select5_val);
+				
+				localStorage.setItem('areatype',areatype);
+				
+				getList();
+			});
+			
+		
+			function getList()
+			{
+				if(network){							
+					ajax();
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			}
+		
+		
+			var ajax = function() {
+				var t_preuri = plus.storage.getItem("g_preuri");
+				var url = t_preuri + "app_tongji.php";  //测试服务器地址 
+				var t_user = plus.storage.getItem("g_user");
+				var data = {
+						user      : t_user,
+						day_start : localStorage.getItem('select4_val'),
+						day_end   : localStorage.getItem('select5_val'),
+						areatype  : localStorage.getItem('areatype')
+					};
+					 
+					
+				//respnoseEl.innerHTML = '正在请求中...';
+				$.post(url, data, success, 'json');
+			};
+		
+			//成功响应的回调函数
+			var success = function(response) {
+	
+				var str = JSON.stringify(response);
+				//console.log(str);
+				//respnoseEl.innerHTML = "总记录：" + response.count;
+				//var val1 = [];
+				//var val2 = [];
+				
+				
+				tj_table.setAttribute('width',response.tablewidth);	
+			        //mychart.update({
+			        //    //series: JSON.stringify(response.seriesdata),
+			        //    subtitle: {
+			        //        text: '反转'
+			        //    }
+			        //});
+						
+				var row = 0 ;		
+				mui.each(response.records, function(key, elem) {    
+					
+					//var t_riqi = response.records[key].riqi;
+					//val1.push(t_riqi.substr(5,5));    //挨个取出数据并填入数组
+					//val2.push(response.records[key].liang);    //挨个取出数据并填入数组
+					
+					//动态添加表格数据
+					if(key == 0){
+						var le_tr = document.createElement("tr");
+						le_tr.setAttribute("class",'table_tr');
+						tj_table.appendChild(le_tr);
+						var le_td1 = document.createElement("td");
+						le_td1.setAttribute("class",'table_td_title');
+						le_td1.innerHTML = elem.riqi;
+						le_tr.appendChild(le_td1);
+						var le_td2 = document.createElement("td");
+						le_td2.setAttribute("class",'table_td_title');
+						le_td2.innerHTML = elem.liang;
+						le_tr.appendChild(le_td2);
+					}else{
+						var le_tr = document.createElement("tr");
+						le_tr.setAttribute("class",'table_tr');
+						tj_table.appendChild(le_tr);
+						var le_td1 = document.createElement("td");
+						le_td1.setAttribute("class",'table_td_content');
+						le_td1.innerHTML = elem.riqi;
+						le_tr.appendChild(le_td1);
+						var le_td2 = document.createElement("td");
+						le_td2.setAttribute("class",'table_td_content');
+						le_td2.innerHTML = elem.liang;
+						le_tr.appendChild(le_td2);
+					}
+				});
+				//console.log(response.seriescount);
+				mychart.xAxis[0].setCategories(response.xLabel);
+				//mychart.series[0].setData(val2);
+				//mychart.addSeries();
+				
+				/*
+				seriesData = [{  
+				    type: '',  
+				    name: '',  
+				    data: []  
+				}]
+				
+				for (var i = 0; i < seriesData.length; i++) {      
+				  chart.addSeries(seriesData[i]);  
+				}
+				*/
+				for (var i = 0; i < response.seriescount - 1; i++) {
+					mychart.addSeries({  
+					    type: 'column',   
+					    data: []  
+					 });
+				}
+				 
+				var t_series = response.seriesdata;//JSON.stringify(response.seriesdata);
+			    mychart.update({  
+			        series:t_series  
+			    });				
+				
+				//plus.webview.currentWebview().reload();
+				//localStorage.setItem('select4_val',"");
+				//localStorage.setItem('select5_val',"");
+				//改图表标题	
+				document.getElementById("tongji_title").innerHTML = response.title;	
+			};
+			
+		})(mui);
+	
+		//主页返回键处理(确认框)
+		mui.back = function(event) {
+			if(plus.storage.getItem("from")=="home"){
+				indexPage = plus.webview.getWebviewById('index.html');
+				mui.fire(indexPage,'newsIds',{
+			    	id:'main'
+			    });
+				oldBack();
+			}else{
+				var btn = ["确定","取消"];
+				mui.confirm('确认关闭程序？','退出',btn,function(e){
+					if(e.index==0){
+						//mui.currentWebview.close();
+						plus.runtime.quit();
+					}
+				});
+			}
+		};
+	</script>
+		
+		
+	</body>
+
+</html>

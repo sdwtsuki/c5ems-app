@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<style>
+			html,
+			body {
+				
+			}
+		</style>
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+		
+	</head>
+
+	<body id="Page_device">
+		<script src="../js/mui.min.js"></script>
+		
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig:{
+				    swipe: false, //关闭右划
+				}
+			})
+			
+			//主页返回键处理
+			var oldBack = mui.back;
+			//var backButtonPress = 0;
+			mui.back = function(event) {
+				if(plus.storage.getItem("from")=="home"){
+					indexPage = plus.webview.getWebviewById('index.html');
+					mui.fire(indexPage,'newsIds',{
+				    	id:'main'
+				    });
+					oldBack();	
+				}else{
+					/*
+					backButtonPress++;
+				    if (backButtonPress > 1) {
+				        plus.runtime.quit();
+				    } else {
+				        plus.nativeUI.toast('再按一次退出应用');
+				    }
+				    setTimeout(function() {
+				        backButtonPress = 0;
+				    }, 1000);
+				    return false;
+				    */
+					var btn = ["确定","取消"];
+					mui.confirm('确认关闭程序？','退出',btn,function(e){
+						if(e.index==0){
+							//mui.currentWebview.close();
+							plus.runtime.quit();
+						}
+					});
+				}
+			};
+		</script>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title titletext">实时数据</h1>
+		</header>
+		
+		<div class="mui-content mt10px">
+			<div class="baohanjuzhong" style="padding:0px 10px;">
+				<div>
+					<div class="mui-input-row mui-search" style="float:left;">					
+							<input id="search_val" type="search" class="mui-input-clear "  placeholder="搜索地址、门牌号">
+					</div>
+					<div style="float:left;">
+						<button id='sch_btn' data-options='{"type":"date"}' class="btn btntext">搜索</button>
+					</div>
+				</div>
+			</div>
+			
+			<div class="records_count">
+		    <ul id="list" class="mui-table-view mui-table-view-chevron">
+
+            	<!--<li class="mui-table-view-cell mui-media commontext pb32px">
+            			
+						<img class="mui-media-object mui-pull-left pmgsize dev_img " style="position: relative;top: 8px;" src="../images/1002.png">
+						<p class='mui-ellipsis mui-pull-right dev_riqi marktext' style="" >2017-06-28</p>
+						<p class='mui-ellipsis mui-pull-right dev_time marktext' >23:33</p>
+						
+						<div class="mui-media-body" style="float: left;">
+							几楼几室
+							<p class='mui-ellipsis marktext mt5px' >110166662333</p>
+						</div>	
+						<div class="statusanddata div_liang" style="">
+							
+							<p class='mui-ellipsis marktext' >15.26kwh</p>	
+						</div>	
+						
+				</li>-->
+
+			</ul>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			//ajax
+			(function($) {
+			$.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+					
+					mui.preload({
+						url:'detail.html',
+					    id:'detail.html',
+					    styles:{  
+						    top:'0px',//新页面顶部位置  
+						    bottom:'51px',//新页面底部位置  
+						}
+					});
+					
+					mui.preload({
+						url:'history.html',
+					    id:'history.html',
+					    styles:{  
+						    top:'0px',//新页面顶部位置  
+						    bottom:'51px',//新页面底部位置  
+						}
+					});
+					
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					} else {
+						//调用接口数据的入口方法
+						getList();
+					}
+					
+				});
+			}
+			
+			if(localStorage.getItem("sch") != null ){
+				document.getElementById("search_val").value = localStorage.getItem("sch");	
+			}
+
+			document.getElementById("sch_btn").addEventListener('tap', function() {
+				var sch = document.getElementById("search_val").value;
+				localStorage.setItem("sch",sch);
+				getList();
+			});
+			
+			function getList()
+			{
+				if(network){
+					ajax();
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			}
+			
+			//从c5_device获得数据并添加devicelist
+			var ajax = function() {
+				var t_preuri = plus.storage.getItem("g_preuri");
+				var url = t_preuri + "app_devicelist.php";  //测试服务器地址
+				var t_user = plus.storage.getItem("g_user");
+				var data = {
+					sch: localStorage.getItem("sch"),
+					user : t_user
+				}; 
+			//	respnoseEl.innerHTML = '正在请求中...';
+				$.post(url, data, success, 'json');
+			};
+
+			var list = document.getElementById("list");
+			//成功响应的回调函数
+			var success = function(response) {
+				
+				var str = JSON.stringify(response);
+				//console.log(str);
+				
+				list.innerHTML = "";
+				
+			//	respnoseEl.innerHTML = "总记录：" + response.count; 
+				mui.each(response.records, function(key, elem) {
+					var li = document.createElement("li");
+					li.className = "mui-table-view-cell mui-media pb32px ";
+					li.setAttribute("id",elem.ComID);
+					li.setAttribute("name",elem.Address +','+ elem.energytype);
+					list.appendChild(li);
+					var img = document.createElement("img");//图片
+					img.className = "mui-media-object mui-pull-left list_left pmgsize dev_img ";
+					
+					img.setAttribute("attri_comid",elem.ComID);
+					img.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+					img.src = "../images/"+elem.energytype+".png";
+					li.appendChild(img);
+					
+					var pt = document.createElement("p");//riqi
+					pt.setAttribute("attri_comid",elem.ComID);
+					pt.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+					pt.className = "mui-ellipsis mui-pull-right list_right dev_riqi marktext " + elem.commstatus;
+					pt.innerHTML = elem.Riqi;
+					li.appendChild(pt);
+					
+					var pt1 = document.createElement("p");//shijian
+					pt1.setAttribute("attri_comid",elem.ComID);
+					pt1.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+					pt1.className = "mui-ellipsis mui-pull-right list_right dev_time marktext " + elem.commstatus;
+					pt1.innerHTML = elem.Shijian;
+					li.appendChild(pt1);
+					
+					var div = document.createElement("div");//几楼几室
+					div.setAttribute("attri_comid",elem.ComID);
+					div.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+					div.className = "mui-media-body  list_left commontext";
+					div.innerHTML = elem.Address;
+					li.appendChild(div);
+					
+					var p = document.createElement("p");//comid
+				    p.className = "mui-ellipsis marktext mt5px mt1px";
+				    p.innerHTML = elem.ComID;
+				    div.appendChild(p);
+				     
+				    var div1 = document.createElement("div");
+					div1.setAttribute("attri_comid",elem.ComID);
+					div1.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+					div1.className = " div_liang  list_right commontext";
+					div1.innerHTML = '&nbsp;';//"<img src='../images/green.png' width='18px' height='18px'>";
+					li.appendChild(div1);
+					
+					var p = document.createElement("p");//liang
+				    p.className = "mui-ellipsis marktext";
+				    p.innerHTML = elem.par001 + ' ' + elem.energyunit;
+				    div1.appendChild(p);
+				    
+				});
+			};
+		
+			})(mui);
+			
+			
+			//点击对应选项显示对应历史数据
+			//var historyPage = plus.webview.getWebviewById('history.html'); //null;
+			//var detailPage  = plus.webview.getWebviewById('detail.html'); //null;
+			//添加列表项的点击事件
+			mui('.mui-content').on('tap', '.list_right', function(e) {
+				
+				var historyPage = plus.webview.getWebviewById('history.html');
+			    var f_comid = this.getAttribute('attri_comid');
+			    var f_pars  = this.getAttribute('attri_pars');
+			    //获得历史页面
+			    //if(!historyPage){
+			    //	historyPage = plus.webview.getWebviewById('history.html');
+			    //}
+			    //触发历史页面的newsId事件
+			    mui.fire(historyPage,'Parameters',{
+			    	r_comid:f_comid,
+			    	r_pars:f_pars
+			    });
+				//打开历史页面  history.html        
+			  	mui.openWindow({
+			  		url:'history.html',
+			    	id:'history.html'
+			  	});
+			
+			});
+			
+			mui('.mui-content').on('tap', '.list_left', function(e) {
+				var detailPage  = plus.webview.getWebviewById('detail.html');
+			    var f_comid = this.getAttribute('attri_comid');
+			    var f_pars  = this.getAttribute('attri_pars');
+			    
+			    //console.log(f_comid + ' ' + f_pars);
+
+			    //if(!detailPage){
+			    //	detailPage = plus.webview.getWebviewById('detail.html');
+			    //}
+			    //触发历史页面的newsId事件
+			    mui.fire(detailPage,'Parameters',{
+			    	r_comid:f_comid,
+			    	r_pars :f_pars
+			    });       
+			  	mui.openWindow({
+			  		url:'detail.html',
+			    	id:'detail.html'
+			  	});
+			});
+					
+		</script>
+	</body>
+
+</html>

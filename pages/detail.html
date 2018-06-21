@@ -1,0 +1,317 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		
+		<style>
+			html,
+			body {
+				
+			}
+			
+		</style>
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_detail">
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/jquery-3.2.1.min.js"></script>
+		<script src="../js/highcharts.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title titletext">设备详情</h1>
+		    <a id="det_history" class="mui-pull-right tabtext mt10px" name="">历史数据</a>
+		</header>
+		
+		<script type="text/javascript">
+			//点击详情在detail上显示对应数据
+			//var historyPage = null;
+			//添加列表项的点击事件
+			mui('.mui-bar').on('tap', '#det_history', function(e) {
+				var historyPage = plus.webview.getWebviewById('history.html');
+			    var f_comid = this.getAttribute('attri_comid');
+			    var f_pars  = this.getAttribute('attri_pars');
+			    
+			    //console.log(f_comid + ' ' + f_pars);
+			    
+			    //获得历史页面
+			    //if(!historyPage){
+			    //	historyPage = plus.webview.getWebviewById('history.html');
+			    //}
+			    //触发历史页面的newsId事件
+			    mui.fire(historyPage,'Parameters',{
+			    	r_comid:f_comid,
+			    	r_pars:f_pars
+			    });
+				//打开详情页面  detail.html        
+			  	mui.openWindow({
+			  		url:'history.html',
+			    	id:'history.html',
+			    	styles:{
+			    		top:'0px',//新页面顶部位置  
+				    	bottom:'51px',//新页面底部位置  
+			    	}
+			  	});
+			});
+		</script>	
+		
+		<div class="mui-content">
+		    <ul id="list" class="mui-table-view mui-table-view-striped mui-table-view-condensed div_table">
+		        <!--<li class="mui-table-view-cell">
+		            <div class="mui-table">
+		                <div class="mui-table-cell mui-col-xs-2">
+		                    <h4 class="mui-ellipsis fieldname" id="row_lift1" class="h4" style="background-color: #1F75CF; width: 200%;">名称测试</h4>
+		                </div>
+		                <div class="mui-table-cell mui-col-xs-10 mui-text-right">
+		                    <span class="mui-h5 fieldvalue" id="row_right1">测试</span>
+		                </div>
+		            </div>-->
+
+		        
+		    </ul>			
+			<div class="btndiv">
+				<button type="button" class="mui-btn mui-btn-primary commontext btn btnheight" data-loading-text = "提交中" data-loading-icon-position="right" >强制开启</button>
+				<button id="btn2" type="button" class="mui-btn mui-btn-primary commontext btnheight" data-loading-text = "提交中" data-loading-icon-position="right" >强制关闭</button>
+			</div>
+			
+			<div class="mui-content-padded">
+				<h5 id= 'tongji_title'>月度环比</h5>
+				<div class="chart" id="mychartcontainer"></div>
+			</div>
+			
+
+		</div>
+		
+		<script type="text/javascript">
+			//图表
+			var getOption = function(chartType) {
+			var mychart = new Highcharts.Chart({  
+					chart: {  
+						renderTo: 'mychartcontainer',  
+						type: 'column',  
+						spacingTop: 20,            //图表上方的空白
+						spacingRight: 0,
+						spacingBottom: 10,
+						spacingtop: 0,
+						marginRight: 10,            //上下左右空隙(图表跟图框之间)
+						borderColor:"#b5d6e6",
+						borderRadius: 5,            //图框的圆角大小
+						borderWidth: 0,             //图框的边框大小
+					},  
+					title:{  
+						text: ''  
+					},  
+					plotOptions:{  
+						column: {  
+							depth: 25  
+						}  
+					},  
+					credits:{  
+						enabled:false  
+					},  
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+							'<td style="padding:0"><b>{point.y:.1f} {point.name}</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							showInLegend: false
+						},
+						spline:{
+							showInLegend: false
+						},
+						column: {
+							allowPointSelect: true, //允许选中，点击选中的扇形区可以分离出来显示
+							cursor: 'pointer',  //当鼠标指向扇形区时变为手型（可点击）
+							//borderRadius:50,
+							showInLegend: false,  //如果要显示图例，可将该项设置为true
+							//stacking: 'normal',
+							dataLabels: {
+								enabled: false,
+								rotation: -90,
+								color: '#FFFFFF',
+								align: 'right',
+								x: 4,
+								y: 10,
+								style: {
+									fontSize: '13px',
+									fontFamily: 'Verdana, sans-serif',
+									textShadow: '0 0 3px black'
+								},
+								formatter: function() {
+									return this.y;
+								},
+							}
+						}
+					},
+					xAxis:{   
+						categories:[],  //["07-16","07-17","07-18","07-19"]
+						labels: {
+							rotation: -35,
+							align: 'right',
+							style: {
+								fontSize: '12px',
+								fontFamily: 'Verdana, sans-serif'
+							}
+						}
+					},  
+					yAxis:{  
+						title:{  
+							enabled: true,  
+							text: ''  
+						}  
+					},  
+					series:  [{"name":"\u4e0a\u5e74","data":[]}]
+				});  
+			return mychart;					
+			};
+			mychart = getOption('bar');
+			//chart over
+			
+			
+			//添加newId自定义事件监听
+			window.addEventListener('Parameters',function(event){
+			  	//获得事件参数
+			  	var f_comid = event.detail.r_comid;
+			  	var f_pars  = event.detail.r_pars;
+			    
+			  	var f_pars_array = new Array(); 
+			 	f_pars_array = f_pars.split(',');
+			 	//console.log(f_pars_array);
+			 	
+				var t_row_right2   = f_pars_array[0];
+			  	//ajax
+				(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				var network = true;
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						
+						mui.preload({
+							url:'history.html',
+						    id:'history.html',
+						    styles:{  
+							    top:'0px',//新页面顶部位置  
+							    bottom:'51px',//新页面底部位置  
+							}
+						});		
+						
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						} else {
+							//调用接口数据的入口方法
+							getList();
+						}
+					});
+				}
+				
+				function getList()
+				{
+					if(network){
+						ajax();
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+				
+				var ajax = function() {
+					var t_preuri = plus.storage.getItem("g_preuri");
+					var url = t_preuri + "app_detail.php";  //测试服务器地址
+					var t_user = plus.storage.getItem("g_user");
+					var data = {
+							user : t_user,
+							comid: f_comid,
+							pars : f_pars,
+							energytype : f_pars.split(",")[1]
+					};
+					$.post(url, data, success, 'json');
+				};
+
+				var list = document.getElementById("list");
+				//成功响应的回调函数
+				var success = function(response) {
+					var str = JSON.stringify(response);
+					list.innerHTML = "";
+
+					for(i=0;i<response.num;i++){
+						
+						var li1 = document.createElement("li");
+						li1.className ="mui-table-view-cell";
+						list.appendChild(li1);
+						
+						var div1 = document.createElement("div");
+						div1.className ="mui-table";
+						li1.appendChild(div1);
+						
+						var div2 = document.createElement("div");
+						div2.className ="mui-table-cell mui-col-xs-2";
+						div1.appendChild(div2);
+						
+						var div3 = document.createElement("div");
+						div3.className ="mui-table-cell mui-col-xs-10 mui-text-right";
+						div1.appendChild(div3);
+						
+						var h4 = document.createElement("h4");
+						h4.className ="mui-ellipsis fieldname h4 commontext";
+						h4.innerHTML = response.liLeft[i];
+						div2.appendChild(h4);
+						
+						var span1 = document.createElement("span");
+						span1.className ="mui-h5 tabtext";
+						span1.innerHTML = response.liRight[i];
+						div3.appendChild(span1);
+					}
+						
+					//动态添加图表数据
+					//console.log(response.seriesdata.data);
+					mychart.xAxis[0].setCategories(response.xLabel);
+					for (var i = 0; i < response.seriescount - 1; i++) {
+						mychart.addSeries({  
+						    type: 'column',   
+						    data: []  
+						 });
+					}
+					 
+					var t_series = response.seriesdata;//JSON.stringify(response.seriesdata);
+				    mychart.update({  
+				        series:t_series  
+				    });				
+					//改图表标题	
+					document.getElementById("tongji_title").innerHTML = response.title;
+						
+				};
+			
+				})(mui);
+			    
+			  	var det_history = document.getElementById("det_history");
+				det_history.setAttribute("attri_comid",f_comid);
+				det_history.setAttribute("attri_pars",f_pars);
+			});
+		</script>
+		
+	</body>
+
+</html>

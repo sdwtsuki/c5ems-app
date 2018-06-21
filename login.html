@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.enterfocus.js"></script>
+		<script src="js/app.js"></script>
+		
+		<style>
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+			
+			</style>
+
+	</head>
+	
+	
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title" style="font-size: 18px;">C5-EMS 登录</h1>
+		</header>
+		<div class="mui-content">
+			<div style="margin-left:25px; margin-right:25px;margin-top: 10px;">
+				<form id='login-form' class="mui-input-group">
+					<div class="mui-input-row" style="font-size: 18px;">
+						<label>账号</label>
+						<input id='account' type="text" class="mui-input-clear mui-input" style="font-size: 18px;" placeholder="请输入账号">
+					</div>
+					<div class="mui-input-row" style="font-size: 18px;">
+						<label>密码</label>
+						<input id='password' type="password" class="mui-input-clear mui-input" style="font-size: 18px;" placeholder="请输入密码">
+					</div>
+				</form>
+			</div>
+			<div class="mui-content-padded">
+				<button type="button" id='login'   class="mui-btn mui-btn-primary" style="float:left;width: 48%;height: 40px;line-height:20px;font-size: 18px;">登  录</button>
+				<button type="button" id='exitBtn' class="mui-btn mui-btn-danger"  style="float:left;width: 48%;height: 40px;line-height:20px;margin-left: 4%;font-size: 18px;" onclick="exitFunc()">退  出</button>
+			</div>
+			
+			
+			<div class="mui-content-padded oauth-area">
+
+			</div>
+		</div>
+
+		
+		<script type="text/javascript">
+			//设置默认字体大小
+			if(localStorage.getItem("styleSize") == null){
+				localStorage.setItem("styleSize",'style_medium');
+			}
+			
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				var network = true;
+
+				var Id = localStorage.getItem("account");	
+	            if(Id != null) //如果缓存中有数据，则加载出来 
+	            {
+	                document.getElementById("account").value = Id;
+	                document.getElementById("password").value = localStorage.getItem("password");
+	            }
+	            
+				//自动登录
+				if(localStorage.getItem("autologin_status") == 'true'){
+					mui.plusReady(function () {
+						var user = document.getElementById("account").value;
+						var pwd = document.getElementById("password").value;
+						getList();	
+					});
+				} 
+				
+				//设立提交事件
+				mui('.mui-content').on('tap', '#login', function(e) {
+					console.log("响应登录点击");
+					//获取输入内容
+					var user = document.getElementById("account").value;
+					var pwd = document.getElementById("password").value;
+				
+					//简易验证
+					if(user.length==0){
+	                    plus.ui.toast("用户名不能为空");
+	                    return;
+	                }
+	            	/* if(pwd.length==0){
+	                    plus.ui.toast("密码不能为空");
+	                    return;
+	                }  */
+
+					getList();
+				});
+
+				
+				//ajax
+				function getList()
+				{
+					var user = document.getElementById("account").value;
+					var pwd = document.getElementById("password").value;
+					
+					if(network){
+						ajax(user,pwd);
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+				
+				var ajax = function(user,pwd) {
+					var url = "http://139.196.53.2/changhai/app_login.php";
+					//发送数据
+					var data = {
+							user:user,
+							pwd:pwd,
+							model: plus.device.model,
+							vendor: plus.device.vendor,
+					}; 	
+					$.post(url, data, success, 'json');
+				};
+				
+				
+				//成功响应的回调函数
+				var success = function(response) {
+					//console.log(response.lastday);
+					if(response.mystatus == "yes"){
+						plus.ui.toast("登录成功");
+						plus.storage.setItem("g_preuri","http://139.196.53.2/changhai/");//缓存网址
+						plus.storage.setItem("g_user",response.Name);//缓存用户名
+						
+						localStorage.setItem("account",response.Name);//本地缓存用户名
+						localStorage.setItem("password",document.getElementById("password").value);//本地缓存密码
+						localStorage.setItem("lastday",response.lastday);//本地缓存最后数据库有数据的日期
+						
+						//防止第一次进入  不执行自动登录
+						if(localStorage.getItem("autologinButtonStatus")== null){
+							localStorage.setItem("autologin_status",'true');
+						}
+						
+						//打开index页面  index.html        
+						mui.openWindow({
+						  url:'index.html',
+						  id:'index.html',
+						    
+						});
+					}else{
+						if(response.mystatus == "pwd error"){
+							plus.ui.toast("密码错误");
+						}else if(response.mystatus == "no user"){
+							plus.ui.toast("用户名不存在");
+						}else{
+							plus.ui.toast("登录验证失败！！");
+						}
+					}
+				};				
+			})(mui);
+				
+			var exitFunc = function(){
+				var btn = ["确定","取消"];
+				mui.confirm('确认关闭程序？','退出',btn,function(e){
+					if(e.index==0){
+						//mui.currentWebview.close();
+						plus.runtime.quit();
+					}
+				});
+			}
+			
+			
+		</script>
+	</body>
+
+</html>

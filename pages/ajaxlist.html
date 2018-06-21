@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" type="text/css" href="../css/app.css"/>
+		<style>
+		 	.mui-content-padded {
+				padding: 10px;
+			}
+			body,body .mui-content {
+				background-color: #fff !important;
+			}
+			code {
+				word-wrap: break-word;
+				word-break: normal;
+				font-size: 90%;
+				color: #c7254e;
+				background-color: #f9f2f4;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">ajax（网络请求）</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded" style="padding-bottom: 50px;">
+
+
+				<div id="records_count">
+					<!--显示接口列表里的记录总数-->				
+				</div>
+				
+		
+				
+				
+				<table id="list" border="1" width="100%" style="padding: 5px 10px;text-align: center;" >
+					<!--显示列表数据-->
+				</table>
+
+
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script>
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				
+				var network = true;
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						} else {
+							//调用接口数据的入口方法
+							getList();
+						}
+					});
+				}
+				
+				function getList()
+				{
+					if(network){
+						ajax();
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+
+				var ajax = function() {
+					//利用askh5的演示接口数据
+					//var url = "http://askh5.com/try/data/starJson";
+					var url = "http://139.196.53.2/changhai/app_devicelist.php";
+					//发送数据，随便填，反正返回的数据都是那个样
+					var data = {
+						name: "askh5.com",
+						author: "gzdayou",
+						description: "最好的HTML5社区..."
+					};
+					respnoseEl.innerHTML = '正在请求中...';
+					$.post(url, data, success, 'json');
+				};
+
+
+				var respnoseEl = document.getElementById("records_count");
+				var list = document.getElementById("list");
+				//成功响应的回调函数
+				var success = function(response) {
+					var str = JSON.stringify(response);
+					console.log(str);
+					//str = JSON.stringify(response);
+					respnoseEl.innerHTML = "总记录：" + response.count; 
+					list.innerHTML = "<tr class='title'><td>字段1</td><td>字段2</td></tr>";
+					mui.each(response.records, function(key, elem) {
+						console.log("elem.name:" + elem.ComID );
+						var li = document.createElement("li");
+						li.innerHTML = elem.ComID;
+						
+					var li = document.createElement("tr");
+						//li.setAttribute("id", key);
+						var col1 = document.createElement("td");
+						col1.className = "col1"
+						col1.innerHTML = elem.ComID; 
+						li.appendChild(col1);
+						var col2 = document.createElement("td");
+						col2.className = "col2"
+						col2.innerHTML = elem.Address;
+						li.appendChild(col2);
+						list.appendChild(li);
+						
+					
+					});
+					console.log("list" + list.innerHTML );
+				};
+
+			})(mui);
+		</script>
+	</body>
+
+</html>

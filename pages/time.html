@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/swiper-3.4.2.min.css">
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		 
+		<style>
+			html,
+			body {
+				
+			}
+			
+		</style>  
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_time">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/jquery-3.2.1.min.js"></script>
+		<script src="../js/swiper-3.4.2.min.js"></script>
+		<script src="../js/highcharts.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				 swipeBack:false //关闭-右滑关闭功能 
+			})
+			//返回键刷新time页
+			var old_back = mui.back; 
+            mui.back = function() {  
+                var wobj = plus.webview.getWebviewById("time.html");//注意 HBuilder 是   1.html 的 ID  你如果1.html 有ID   要替换掉HBuilder， 
+                old_back()  
+            }
+
+		</script>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 id="title" class="mui-title titletext">时段数据</h1>
+		<!--    <a id="his_detail" class="mui-pull-right" name="" style="position: relative;top: 12px;">详情</a>  -->
+		</header>
+		
+		<div class="mui-content">
+				<div class="mui-content-padded">
+					<h5 id= 'tongji_title'>月度环比</h5>
+					<div class="chart" id="mychartcontainer"></div>
+				</div>
+			
+			<div>
+				<div class="div_table tableheight286px" >
+					<table id="his_main_table" border="0" bordercolor="#D8D8D8" bgcolor="white" cellspacing="" cellpadding="" width="500px">
+						<tr class="table_tr">
+							<td class="table_td commontext">时间</td>
+							<td class="table_td commontext">抄见数</td>
+							<td class="table_td commontext">时段用量</td>
+							<td class="table_td commontext">供电状态</td>
+							<td class="table_td commontext">采集日期</td>
+							<td class="table_td commontext">采集时间</td>
+						</tr>
+					</table>
+				</div>
+			</div>	
+		
+		<script type="text/javascript">
+
+			//图表
+			var getOption = function(chartType) {
+			var mychart = new Highcharts.Chart({  
+					chart: {  
+						renderTo: 'mychartcontainer',  
+						type: 'column',  
+						spacingTop: 20,            //图表上方的空白
+						spacingRight: 0,
+						spacingBottom: 10,
+						spacingtop: 0,
+						marginRight: 10,            //上下左右空隙(图表跟图框之间)
+						borderColor:"#b5d6e6",
+						borderRadius: 5,            //图框的圆角大小
+						borderWidth: 0,             //图框的边框大小
+					},  
+					title:{  
+						text: ''  
+					},  
+					plotOptions:{  
+						column: {  
+							depth: 25  
+						}  
+					},  
+					credits:{  
+						enabled:false  
+					},  
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+							'<td style="padding:0"><b>{point.y:.1f} {point.name}</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							showInLegend: false
+						},
+						spline:{
+							showInLegend: false
+						},
+						column: {
+							allowPointSelect: true, //允许选中，点击选中的扇形区可以分离出来显示
+							cursor: 'pointer',  //当鼠标指向扇形区时变为手型（可点击）
+							//borderRadius:50,
+							showInLegend: false,  //如果要显示图例，可将该项设置为true
+							//stacking: 'normal',
+							dataLabels: {
+								enabled: false,
+								rotation: -90,
+								color: '#FFFFFF',
+								align: 'right',
+								x: 4,
+								y: 10,
+								style: {
+									fontSize: '13px',
+									fontFamily: 'Verdana, sans-serif',
+									textShadow: '0 0 3px black'
+								},
+								formatter: function() {
+									return this.y;
+								},
+							}
+						}
+					},
+					xAxis:{   
+						categories:[],  //["07-16","07-17","07-18","07-19"]
+						labels: {
+							rotation: -35,
+							align: 'right',
+							style: {
+								fontSize: '12px',
+								fontFamily: 'Verdana, sans-serif'
+							}
+						}
+					},  
+					yAxis:{  
+						title:{  
+							enabled: true,  
+							text: ''  
+						}  
+					},  
+					series:  [{"name":"\u4e0a\u5e74","data":[]}]
+				});  
+			return mychart;					
+			};
+			mychart = getOption('bar');
+			
+			
+			//添加newId自定义事件监听
+			window.addEventListener('Parameters',function(event){
+			  	//获得事件参数
+			  	var f_comid = event.detail.r_comid;
+			  	var f_pars  = event.detail.r_pars;
+			  	var f_riqi  = event.detail.r_riqi;
+			  	
+				var tle = document.getElementById("title");
+				tle.innerHTML = f_riqi + "时段数据";
+				
+				var his_main_table = document.getElementById("his_main_table");
+				his_main_table.innerHTML = "";
+								
+			  	//根据comid和riqi向服务器请求time列表
+			  	//ajax
+				(function($) {
+					$.init({
+						swipeBack:true //启用右滑关闭功能
+					});
+					var network = true;
+					if(mui.os.plus){
+						mui.plusReady(function () {
+							if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+								network = false;
+							} else {
+								//调用接口数据的入口方法
+								getList();
+							}
+						});
+					}
+				
+					function getList()
+					{
+						if(network){
+							ajax();
+						}else{
+							mui.toast("当前网络不给力，请稍后再试");
+						}
+					}
+				
+				
+					var ajax = function() {
+						var t_preuri = plus.storage.getItem("g_preuri");
+						var url = t_preuri + "app_time.php";  //测试服务器地址
+						var t_user = plus.storage.getItem("g_user");
+						var data = {
+							user : t_user,
+							comid:f_comid,
+							riqi:f_riqi,
+							pars:f_pars
+						};
+						$.post(url, data, success, 'json');
+					};
+
+					//成功响应的回调函数
+					var success = function(response) {
+
+						var str = JSON.stringify(response);
+						console.log(str);
+						
+						var parcount = response.parcount; 
+						var his_main_table = document.getElementById("his_main_table");
+						his_main_table.setAttribute('width',response.tablewidth);
+						his_main_table.innerHTML = "";
+
+	
+						var row = 0 ;
+						mui.each(response.records, function(key, elem) {						
+							//动态添加右侧数据
+							var tr = document.createElement("tr");
+							
+							his_main_table.appendChild(tr);
+					
+							for(var i=0;i<parcount;i++)
+							{
+								var td = document.createElement("td");
+								if (row==0){
+									td.setAttribute("class",'table_td_title');
+								}else{
+									td.setAttribute("class",'table_td_content');
+								}
+								
+								j = i + 1;
+								var t_par = "par0"+j;
+								td.innerHTML = elem[t_par];
+								tr.appendChild(td);
+							}
+
+							tr.setAttribute("attri_riqi",elem.par01);
+							tr.setAttribute("attri_comid",f_comid);
+							tr.setAttribute("attri_pars",'');
+							
+							row = row + 1;
+						});
+						
+						//动态添加图表数据
+						//console.log(response.xLabel);
+						mychart.xAxis[0].setCategories(response.xLabel);
+						for (var i = 0; i < response.seriescount - 1; i++) {
+							mychart.addSeries({  
+							    type: 'column',   
+							    data: []  
+							 });
+						}
+						 
+						var t_series = response.seriesdata;//JSON.stringify(response.seriesdata);
+					    mychart.update({  
+					        series:t_series  
+					    });				
+						//改图表标题	
+						document.getElementById("tongji_title").innerHTML = response.title;
+						
+						
+						
+						//console.log("list" + list.innerHTML );
+						
+					};
+			
+				})(mui);	
+			});
+	
+		</script>
+		
+		
+		
+	</body>
+	
+</html>

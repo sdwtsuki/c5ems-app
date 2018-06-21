@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+			
+			</style>
+
+	</head>
+	
+	<script type="text/javascript">
+		
+		
+	</script>
+	
+	
+	
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登录</h1>
+		</header>
+		<div class="mui-content">
+			<div style="margin-left:25px; margin-right:25px;margin-top: 10px;">
+			<form id='login-form' class="mui-input-group">
+				<div class="mui-input-row">
+					<label>账号</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入账号">
+				</div>
+				<div class="mui-input-row">
+					<label>密码</label>
+					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+			</form>
+			<form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						 <input type="checkbox" id="chkRem" />记住密码<br />
+						
+						
+						<div id="autoLogin" class="mui-switch">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form>
+			</div>
+			<div class="mui-content-padded">
+				<button id='login' class="mui-btn mui-btn-block mui-btn-primary" onclick="remPwd()">登录</button>
+				
+			</div>
+			<div class="mui-content-padded oauth-area">
+
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.enterfocus.js"></script>
+		<script src="js/app.js"></script>
+		
+		
+		
+		<script type="text/javascript">
+				(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				var network = true;
+			/*	if(mui.os.plus){
+					mui.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						} else {
+							//调用接口数据的入口方法
+							getList();
+						}
+					});
+				}*/
+				
+				
+				
+				
+				
+				
+				
+				
+				var loginButton = document.getElementById("login");
+				
+				//设立提交事件
+					mui('.mui-content').on('tap', '#login', function(e) {
+						//获取输入内容
+						var user = document.getElementById("account").value;
+						var pwd = document.getElementById("password").value;
+					
+					//简易验证
+					if(user.length==0){
+	                    plus.ui.toast("用户名不能为空");
+	                    return;
+	                }
+	            /*    if(pwd.length==0){
+	                    plus.ui.toast("密码不能为空");
+	                    return;
+	                  }  */
+					
+					
+					
+					//ajax
+					function getList()
+					{
+						if(network){
+						
+							ajax();
+						}else{
+							mui.toast("当前网络不给力，请稍后再试");
+						}
+					}
+					
+					
+					var ajax = function() {
+						var url = "http://139.196.53.2/changhai/app_login.php";  //测试服务器地址
+					//	var url = "http://192.168.46.10/changhai/app_detail.php";  //现场地址
+						//发送数据，随便填，反正返回的数据都是那个样
+					//	alert(user);
+						var data = {
+								user:user,
+								pwd:pwd,
+							}; 
+							
+							var list = document.getElementById("list");
+							//成功响应的回调函数
+							var success = function(response) {
+							//	alert(response.Password);
+						//	alert(response.mystatus);
+								if(response.mystatus == "yes"){
+									plus.ui.toast("登录成功");
+									plus.storage.setItem("g_preuri","http://139.196.53.2/changhai/");//缓存网址
+									plus.storage.setItem("g_user",response.Name);//缓存用户名
+									localStorage.setItem("account",response.Name);//本地缓存用户名
+									localStorage.setItem("password",pwd);//本地缓存密码
+									//打开index页面  index.html        
+									mui.openWindow({
+									  url:'index.html',
+									  id:'index.html',
+									    
+									});
+								}else{
+									if(response.mystatus == "pwd error"){
+										plus.ui.toast("密码错误");
+									}else if(response.mystatus == "no user"){
+										plus.ui.toast("用户名不存在");
+									}else{
+										plus.ui.toast("登录验证失败！！");
+									}
+									
+								}
+	
+							};	
+					//	respnoseEl.innerHTML = '正在请求中...';
+						$.post(url, data, success, 'json');
+					};	
+						getList();
+					});
+				
+					//自动登录模块
+					var Id = localStorage.getItem("account");
+				//	alert(Id);
+					//alert(localStorage.getItem("password"));	
+			            if(Id != null) //如果缓存中有数据，则加载出来 
+			            {
+			            	
+			                document.getElementById("account").value = Id;
+			                document.getElementById("password").value = localStorage.getItem("password");
+			                document.getElementById("chkRem").checked = "checked";
+			            
+			            }
+			            //将账号与密码保存到Localstore 
+			            function remPwd() {
+			                var check = document.getElementById("chkRem");
+			                if(check.checked) //判断记住密码项是否勾选，是则记住密码到本地缓存 
+			                {
+			                    var id = document.getElementById("account").value;
+			            //        var pwd = document.getElementById("password").value;
+			                    localStorage.setItem("account", id);
+			            //        localStorage.setItem("password", pwd);
+			                } else //否则就移除本地缓存 
+			                {
+			                    localStorage.removeItem("account");
+			            //        localStorage.removeItem("password");
+			                }
+			                
+			               
+			            }
+					
+					
+					
+					
+					
+					
+			//	var respnoseEl = document.getElementById("records_count");
+				  
+			
+				})(mui);	
+		</script>
+	</body>
+
+</html>

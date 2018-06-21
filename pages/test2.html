@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dropdown</title>
+        <link rel="stylesheet" href="style.css">
+        <meta charset="utf-8" />
+        <style type="text/css">
+        	body {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+li {
+    float: left;
+}
+li a, .dropbtn {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+li a:hover, .dropdown:hover .dropbtn {
+    background-color: #1f75cf;
+}
+li.dropdown {
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fafafa;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+.dropdown-content a:hover {
+    color: white;
+    background-color: #1f75cf;
+}
+.show {
+    display: block;
+}
+        </style>
+        <script type="text/javascript">
+        	function showList(o) {
+    hideList("dropdown-content" + o.id);
+    document.getElementById("dropdown-" + o.id).classList.toggle("show");
+}
+ 
+ 
+function hideList(option) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+     
+    for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.id != option) {
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
+ 
+ 
+window.onclick = function(e) {
+    if (!e.target.matches('.dropbtn')) {
+        hideList("");
+    }
+}
+        </script>
+    </head>
+    <body>
+        <ul>
+            <li class="dropdown">
+                <a id="a" href="javascript:void(0)" class="dropbtn" onclick="showList(this)">标题 A</a>
+                <div class="dropdown-content" id="dropdown-a">
+                    <a href="#">下拉 1</a>
+                    <a href="#">下拉 2</a>
+                    <a href="#">下拉 3</a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a id="b" href="javascript:void(0)" class="dropbtn" onclick="showList(this)">标题 B</a>
+                <div class="dropdown-content" id="dropdown-b">
+                    <a href="#">下拉 1</a>
+                    <a href="#">下拉 2</a>
+                    <a href="#">下拉 3</a>
+                </div>
+            </li>
+        </ul>
+        <script src="script.js"></script>
+    </body>
+</html>

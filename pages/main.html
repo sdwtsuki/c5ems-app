@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_main">
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			//主页返回键处理(确认框)
+			mui.back = function(){
+				var btn = ["确定","取消"];
+				mui.confirm('确认关闭程序？','退出',btn,function(e){
+					if(e.index==0){
+						//mui.currentWebview.close();
+						plus.runtime.quit();
+					}
+				});
+			}
+		</script>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <a id="settingpage" class="mui-icon mui-icon-gear mui-pull-right"></a>
+		    <!--<img id="settingpage" src="../APP ICO.png" style="width: 25px;height: 25px;position: absolute;top: 10px;" />-->
+		    <h1 class="mui-title titletext">C5-EMS</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			<!-- 图片轮播 -->
+			<div id="slider" class="mui-slider">
+				<div id="carousel" class="mui-slider-group mui-slider-loop">
+					<div id="del">
+					
+					<div class="mui-slider-item" id="">
+						<a href="#">
+							<img id="src_1" src="../images/green_energy1.jpg">
+							<p id="img_title1" class="mui-slider-title">C5-EMS 绿色能源先行者</p>
+						</a>
+					</div>
+					</div>
+				</div>
+				<div id="indicator" class="mui-slider-indicator mui-text-right">
+					<!--<div class="mui-indicator mui-active"></div>
+					<div class="mui-indicator"></div>
+					<div class="mui-indicator"></div>-->
+					
+				</div>
+			</div>
+			<!--over-->
+			
+			<!--列表-->
+			<div  class="maindiv">
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="announcement">
+					最新消息
+					</div>
+				</div>
+				
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="status">
+					实时状态
+					</div>
+				</div>
+				
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="device">
+					实时数据
+					</div>
+				</div>
+				
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="alarm">
+					异常报警
+					</div>
+				</div>
+				
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="tongji">
+					统计报表
+					</div>
+				</div>
+				
+				<div class="secondarydiv">
+					<div class=" secondarydiv_div main_option titletext" id="rank">
+					能耗排行
+					</div>
+				</div>
+
+
+			</div>
+			
+			
+		</div>	
+	</body>
+
+	<script>
+		mui.init({
+			swipeBack:false //启用右滑关闭功能
+		});
+		
+		var network = true;
+		if(mui.os.plus){
+			mui.plusReady(function () {
+				
+				mui.preload({
+					url:'announcement_detail.html',
+				    id:'announcement_detail.html',
+				    styles:{  
+					    top:'0px',//新页面顶部位置  
+					    bottom:'51px',//新页面底部位置  
+					}
+				});
+				
+				
+				if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+					network = false;
+				} else {
+					//调用接口数据的入口方法
+					getList();
+				}
+				
+			});
+		}
+
+		function getList()
+		{
+			if(network){
+				ajax();
+			}else{
+				mui.toast("当前网络不给力，请稍后再试");
+			}
+		}
+			
+		//从c5_device获得数据并添加devicelist
+		var ajax = function() {
+			var t_preuri = plus.storage.getItem("g_preuri");
+			var url = t_preuri + "app_news_home.php";  //测试服务器地址
+			var t_user = plus.storage.getItem("g_user");
+			var data = {
+				sch: localStorage.getItem("sch"),
+				user : t_user
+			}; 
+			
+			//respnoseEl.innerHTML = '正在请求中...';
+			mui.post(url, data, success, 'json');
+			
+		};
+		
+		var list = document.getElementById("list");
+		//成功响应的回调函数
+		var success = function(response) {
+			var str = JSON.stringify(response);
+			//console.log(str);
+			
+			var carousel = document.getElementById("carousel");
+			var del = document.getElementById("del");
+			carousel.removeChild(del);
+			
+			//额外增加的一个节点(循环轮播：第一个节点是最后一张轮播)
+			var div = document.createElement("div");
+			div.setAttribute("class","mui-slider-item mui-slider-item-duplicate");
+			carousel.appendChild(div);
+			var a = document.createElement("a");
+			div.appendChild(a);
+			var img = document.createElement("img");
+			img.setAttribute("src","../images/green_energy1.jpg");
+			a.appendChild(img);
+			var p = document.createElement("p");
+			p.setAttribute("class","mui-slider-title");
+			a.appendChild(p);
+			
+			
+			
+			var i = 1;
+			mui.each(response.records, function(key, elem) {
+				
+				var id = "";
+					id = "img_"+i;
+				var imgTitle = "img_title"+i;
+				//	console.log(id);
+				
+				
+				var div = document.createElement("div");
+				div.setAttribute("class","mui-slider-item mui-slider-item-duplicate");
+				carousel.appendChild(div);
+				
+				var a = document.createElement("a");
+				div.appendChild(a);
+				
+				var img = document.createElement("img");
+				img.setAttribute('news_id',elem.id);
+				img.setAttribute("src",elem.img);
+				a.appendChild(img);
+				
+				var p = document.createElement("p");
+				p.setAttribute("class","mui-slider-title");
+				p.setAttribute("id","");
+				p.innerHTML = elem.title;
+				a.appendChild(p);
+				
+				var indicator = document.getElementById("indicator");
+				var div1 = document.createElement("div");
+				div1.setAttribute("class","mui-indicator");
+				indicator.appendChild(div1);
+
+				i++;
+			});
+			
+			//额外增加的一个节点(循环轮播：第一个节点是最后一张轮播)
+			var div = document.createElement("div");
+			div.setAttribute("class","mui-slider-item mui-slider-item-duplicate");
+			carousel.appendChild(div);
+			var a = document.createElement("a");
+			div.appendChild(a);
+			var img = document.createElement("img");
+			img.setAttribute("src","../images/green_energy1.jpg");
+			a.appendChild(img);
+			var p = document.createElement("p");
+			p.setAttribute("class","mui-slider-title");
+			a.appendChild(p);
+			
+			
+			//图片轮播速度设置
+			var slider = mui("#slider");
+					slider.slider({
+						interval: 5000
+					});
+			
+		};
+		
+		mui.plusReady(function(){
+			//强制将index.html 首页选项卡点亮，其他全部变暗
+			//indexPage = plus.webview.getWebviewById('index.html');
+			//mui.fire(indexPage,'newsIds',{
+		    //	id:'main'
+		    //});
+			
+			//打开设置页
+			mui('.mui-bar-nav').on('tap', '#settingpage', function(e) {
+				//  alert(id);
+				
+				//if(plus.webview.getWebviewById('setting.html'))
+				//{
+				//	plus.webview.close('setting.html');
+				//}
+				//打开对应页面        
+				mui.openWindow({
+				  	url:'setting.html',
+				    id: 'setting.html',
+				    styles:{
+				    	top:'0px',//新页面顶部位置  
+					    bottom:'51px',//新页面底部位置  
+				    },
+				    show:{
+				      	autoShow:true,//页面loaded事件发生后自动显示，默认为true
+				      	aniShow:"slide-in-right",//页面显示动画，默认为”slide-in-right“；
+			      		duration:300//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+				    }
+				});
+			});
+			//添加选项卡的点击事件
+			mui('.secondarydiv').on('tap', 'div', function(e) {
+				
+				plus.storage.setItem("from","home");
+				
+				var id = this.getAttribute('id');
+				//  alert(id);
+				//打开对应页面        
+				mui.openWindow({
+				  	url:id + '.html',
+				    id: id + '.html',
+				    styles:{
+				    	top:'0px',//新页面顶部位置  
+					    bottom:'51px',//新页面底部位置  
+				    },
+				    show:{
+				      	autoShow:true,//页面loaded事件发生后自动显示，默认为true
+				      	aniShow:"slide-in-right",//页面显示动画，默认为”slide-in-right“；
+			      		duration:300//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+				    }
+
+				});
+				//改变index页面的选中
+			  	if(id == "device" || id == "tongji" || id == "rank"){
+			  		  //获得index页面
+				    indexPage = plus.webview.getWebviewById('index.html');
+				    //alert(indexPage);
+				    //触发历史页面的newsId事件
+				    mui.fire(indexPage,'newsIds',{
+				    	id:id
+				    });
+			  	}
+	
+	
+			});
+		});
+		
+		//添加图片的点击事件
+		mui('#slider').on('tap', 'img', function(e) {
+			var new_id = this.getAttribute("news_id");
+			console.log(new_id);
+			
+			var detailPage = plus.webview.getWebviewById('announcement_detail.html');
+				//alert(detailPage);
+				//触发news_detail页面的Parameters事件
+			    mui.fire(detailPage,'Parameters',{
+			    	new_id:new_id
+			    }); 
+			
+			//打开对应页面        
+			mui.openWindow({
+			  	url:'announcement_detail.html',
+			    id: 'announcement_detail.html',
+			    styles:{
+			    	top:'0px',//新页面顶部位置  
+				    bottom:'51px',//新页面底部位置  
+			    }
+			});
+			
+
+
+		});
+	</script>
+	
+</html>

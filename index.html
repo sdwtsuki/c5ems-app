@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link id="style_set" rel="stylesheet" href="css/style_small.css">
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    
+    <script type="text/javascript">
+		var style_set = document.getElementById("style_set");
+		style_set.setAttribute("href","css/"+ localStorage.getItem('styleSize') +".css");
+	</script>
+</head>
+<body>
+	
+    <!-- 底部选项卡 -->
+    <nav class="mui-bar mui-bar-tab" id="option">
+			<a id="main" class="mui-tab-item mui-active" href="pages/main.html">
+				<span class="mui-icon mui-icon-home"></span>
+				<span id="main_text" class="mui-tab-label">首页</span>
+			</a>
+			<a id="device" class="mui-tab-item" href="pages/device.html">
+				<span class="mui-icon iconfont icon-shishidongtai"></span>
+				<span id="device_text" class="mui-tab-label">实时数据</span>
+			</a>
+			<a id="tongji" class="mui-tab-item" href="pages/tongji.html">
+				<span class="mui-icon iconfont icon-baobiao1" style="font-size:16px;top:6px;"><!--<span class="mui-badge">6</span>--></span>
+				<span id="tongji_text" class="mui-tab-label">能耗报表</span>
+			</a>
+			<a id="rank" class="mui-tab-item" href="pages/rank.html">
+				<span class="mui-icon iconfont icon-zlinfoboardxiangmugaikuang"></span>
+				<span id="rank_text" class="mui-tab-label">能耗排行</span>
+			</a>
+			
+	</nav>
+		
+	<script type="text/javascript" charset="utf-8">
+		//mui初始化
+		/*
+		mui.init({
+			
+			subpages:[{
+  					url:'pages/main.html',
+				    id:'main.html',
+			      	styles:{  
+					      top:'0px',//新页面顶部位置  
+					      bottom:'51px',//新页面底部位置  
+					    //  width:newpage-width,//新页面宽度，默认为100%  
+					    //  height:newpage-height,//新页面高度，默认为100%  
+					    
+					    }
+				}]
+		});
+		*/
+		if(mui.os.plus){
+			mui.plusReady(function () {
+					//预加载main页
+				mui.preload({
+					url:'pages/main.html',
+				    id:'main.html', 
+				    styles:{  
+					      top:'0px',//新页面顶部位置  
+					      bottom:'51px',//新页面底部位置  
+					    //  width:newpage-width,//新页面宽度，默认为100%  
+					    //  height:newpage-height,//新页面高度，默认为100%  
+					    
+					    }
+				});	
+			    mui.openWindow({
+			  		url:'pages/main.html',
+			    	id: 'main.html',
+			    	styles:{
+			    		top:'0px',//新页面顶部位置  
+				    	bottom:'51px',//新页面底部位置  
+			    	}
+			    });
+			});
+		};
+		
+		//添加选项卡的点击事件
+		mui('#option').on('tap', 'a', function(e) {
+			
+			plus.storage.setItem("from","");
+			
+		    var id = this.getAttribute('id');
+		    //  alert(id);
+		    //打开对应页面        
+		    mui.openWindow({
+		  		url:'pages/'+ id + '.html',
+		    	id: id + '.html',
+		    	styles:{
+		    		top:'0px',//新页面顶部位置  
+			    	bottom:'51px',//新页面底部位置  
+		    	},
+			    show:{
+			      	autoShow:true,//页面loaded事件发生后自动显示，默认为true
+			      	aniShow:"slide-in-right",//页面显示动画，默认为”slide-in-right“；
+		      		duration:300//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+			    }
+		    });
+		  
+		    //获得对应页面
+		    /*
+		    var Page = null;
+		    Page = plus.webview.getWebviewById(id + '.html');
+			//alert(Page);
+		
+			// 获取所有Webview窗口  ???这个代码有何用处
+			var curr = plus.webview.getWebviewById("index.html");
+			var wvs = plus.webview.all();
+			for (var i = 0, len = wvs.length; i < len; i++) {
+				//关闭除main页面和本页面外的其他页面
+				if (wvs[i].getURL() == Page.getURL())
+				continue;
+				if (wvs[i].getURL() == curr.getURL())
+				continue;	
+				plus.webview.close(wvs[i]);
+			}
+			*/
+		});
+		
+		//添加newId自定义事件监听(main点击切换选项卡高亮)
+		window.addEventListener('newsIds',function(event){
+		  //获得事件参数
+		  var current = event.detail.id;
+		  //var defaultTab = document.getElementById("defaultTab");
+		  document.getElementById("main").classList.remove('mui-active');
+		  document.getElementById("device").classList.remove('mui-active');
+		  document.getElementById("tongji").classList.remove('mui-active');
+		  document.getElementById("rank").classList.remove('mui-active');
+		  document.getElementById(current).classList.add('mui-active');
+		});
+		
+		 //自定义事件，模拟点击“首页选项卡”  ???以下代码有何用处
+		document.addEventListener('gohome', function() {
+			var defaultTab = document.getElementById("defaultTab");
+			//模拟首页点击
+			mui.trigger(defaultTab, 'tap');
+			//切换选项卡高亮
+			var current = document.querySelector(".mui-bar-tab>.mui-tab-item.mui-active");
+			if (defaultTab !== current) {
+				current.classList.remove('mui-active');
+				defaultTab.classList.add('mui-active');
+			}
+		});
+	
+		
+		
+	</script>
+    
+    
+    
+	<div class="mui-content">
+	    
+	</div>
+</body>
+</html>

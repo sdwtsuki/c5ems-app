@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_alarm">
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title titletext">异常报警</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div  class="alarm_div" >
+				<div class="alarmdiv_head" style="background-color: #FF7334;" >
+					<div class="div_title commontext" >
+						通讯异常
+					</div>
+					<p id="count_com" class="commontext">共</p>
+					<div id="comAlarm_more" name="comAlarm_more_close" class="alarm mui-icon mui-icon-arrowup"></div>
+				</div>
+				
+				<div class="mt10px" >
+					<table id="com_alarmList" class=" commontext" border="0" bordercolor="#D8D8D8" bgcolor="white" cellspacing="" cellpadding="" width="600px">
+		            	<!--<tr class="mui-table-view-cell mui-media">
+		            			
+								
+								
+								<div class="rank_div1" >
+									排名
+								</div>
+								
+								<div class="rank_div2">
+									地址
+								</div>
+								
+								<div class="rank_div3">
+									能耗量
+								</div>
+								
+						</tr>-->
+					</table>
+				</div>
+			</div>
+				
+				
+			<div class="alarm_div" >
+				<div class="alarmdiv_head" style="background-color: #DD4E42;"  >
+					<div class="div_title commontext"  >
+						数据异常
+					</div>
+					<p id="count_data" class="commontext" >共</p>
+					<div id="dataAlarm_more" name="dataAlarm_more_close" class="alarm mui-icon mui-icon-arrowup"></div>
+				</div>
+				
+				<div class="mt10px" >
+					<table id="data_alarmList" class=" commontext" border="0" bordercolor="#D8D8D8" bgcolor="white" cellspacing="" cellpadding="" width="600px">
+		            	<!--<tr class="mui-table-view-cell mui-media">
+		            			
+								
+								
+								<div class="rank_div1" >
+									排名
+								</div>
+								
+								<div class="rank_div2">
+									地址
+								</div>
+								
+								<div class="rank_div3">
+									能耗量
+								</div>
+								
+						</tr>-->
+					</table>
+				</div>
+			</div>
+			
+		</div>
+		
+		<script type="text/javascript">
+			//ajax
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				
+				var network = true;
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						
+						/*mui.preload({
+							url:'detail.html',
+						    id:'detail.html',
+						    styles:{  
+							    top:'0px',//新页面顶部位置  
+							    bottom:'51px',//新页面底部位置  
+							}
+						});*/
+						
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						} else {
+							//调用接口数据的入口方法
+							getComAlarm();
+							getDataAlarm();
+							
+						}
+						
+					});
+				}
+				
+				var comAlarm = "comAlarm";
+				var dataAlarm = "dataAlarm";
+
+				/*document.getElementById("sch_btn").addEventListener('tap', function() {
+					var sch = document.getElementById("search_val").value;
+					
+					getAlarm();
+				});*/
+				
+				function getComAlarm()
+				{
+					if(network){
+						ajax_comAlarm();
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+				//从c5_device获得数据并添加devicelist
+				var ajax_comAlarm = function(comMore) {
+					var t_preuri = plus.storage.getItem("g_preuri");
+					var url = t_preuri + "app_alarm.php";  //测试服务器地址
+					var t_user = plus.storage.getItem("g_user");
+					
+					if(comMore == undefined){
+						comMore = 2;
+					}
+					//alert(comMore);
+					var data = {
+						user : t_user,
+						limit : comMore,
+						alarmType : comAlarm
+					}; 
+				//	respnoseEl.innerHTML = '正在请求中...';
+					$.post(url, data, success_comAlarm, 'json');
+				};
+
+				var com_alarmList = document.getElementById("com_alarmList");
+				//成功响应的回调函数
+				var success_comAlarm = function(response) {
+					
+					var str = JSON.stringify(response);
+					console.log(str);
+					document.getElementById("count_com").innerHTML = "共"+ response.count +"条";
+					var parcount = response.parcount; 
+					com_alarmList.setAttribute('width',response.tablewidth);
+					
+					com_alarmList.innerHTML = "";
+
+					//	respnoseEl.innerHTML = "总记录：" + response.count; 
+					row = 0 ;
+					mui.each(response.records, function(key, elem) {
+						var tr = document.createElement("tr");
+						tr.className = "alarmDetail comAlarmLi";
+						tr.setAttribute("attri_comid",elem.ComID);
+						tr.setAttribute("attri_pars",elem.Address +','+ elem.energytype);
+						com_alarmList.appendChild(tr);
+						
+						for(var i=0;i<parcount;i++){
+							var td = document.createElement("td");
+							if (row==0){
+								td.setAttribute("class",'table_td_title');
+							}else{
+								td.setAttribute("class",'table_td_content');
+							}
+							
+							j = i + 1;
+							var t_par = "par0"+j;
+							td.innerHTML = elem[t_par];
+							tr.appendChild(td);
+								
+						}
+						
+						if (row > 2){
+							tr.style.display = "none";
+						}
+						
+						row = row + 1;
+					});
+					var comAlarm_more = document.getElementById("comAlarm_more");
+					comAlarm_more.setAttribute("name",'comAlarm_more_close');
+				};
+				
+				function getDataAlarm()
+				{
+					if(network){
+						ajax_dataAlarm();
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				
+				//从c5_device获得数据并添加devicelist
+				var ajax_dataAlarm = function(dataMore) {
+					var t_preuri = plus.storage.getItem("g_preuri");
+					var url = t_preuri + "app_alarm.php";  //测试服务器地址
+					var t_user = plus.storage.getItem("g_user");
+					
+					if(dataMore == undefined){
+						dataMore = 2;
+					}
+					//alert(comMore);
+					var data = {
+						user : t_user,
+						limit : dataMore,
+						alarmType : dataAlarm
+					}; 
+				//	respnoseEl.innerHTML = '正在请求中...';
+					$.post(url, data, success_dataAlarm, 'json');
+				};
+
+				var data_alarmList = document.getElementById("data_alarmList");
+				//成功响应的回调函数
+				var success_dataAlarm = function(response) {
+					
+					var str = JSON.stringify(response);
+					console.log(str);
+					
+					document.getElementById("count_data").innerHTML = "共"+ response.count +"条";
+					var parcount = response.parcount; 
+					data_alarmList.setAttribute('width',response.tablewidth);
+					
+					
+					data_alarmList.innerHTML = "";
+					
+					
+
+					//	respnoseEl.innerHTML = "总记录：" + response.count; 
+					row = 0 ;
+					mui.each(response.records, function(key, elem) {
+						var tr = document.createElement("tr");
+						tr.className = "alarmDetail dataAlarmLi";
+						tr.setAttribute("attri_comid",elem.ComID);
+						tr.setAttribute("attri_pars",elem.par02 +','+ elem.energytype);
+						data_alarmList.appendChild(tr);
+
+						for(var i=0;i<parcount;i++){
+							var td = document.createElement("td");
+							if (row==0){
+								td.setAttribute("class",'table_td_title');
+							}else{
+								td.setAttribute("class",'table_td_content');
+							}
+							
+							j = i + 1;
+							var t_par = "par0"+j;
+							td.innerHTML = elem[t_par];
+							tr.appendChild(td);
+								
+						}
+						
+						if (row > 2){
+							tr.style.display = "none";
+						}
+						
+						row = row + 1;
+					});
+					
+					var dataAlarm_more = document.getElementById("dataAlarm_more");
+					dataAlarm_more.setAttribute("name",'dataAlarm_more_close');
+				};
+
+				//'通讯异常'添加列表项的点击事件
+				var comAlarm_more = document.getElementById("comAlarm_more");
+				mui('.mui-content').on('tap', '#comAlarm_more', function(e) {
+					var arr = document.getElementsByClassName("comAlarmLi");
+					//comAlarm_more.setAttribute("class",'mui-icon mui-icon-arrowdown');
+					//console.log(comAlarm_more.getAttribute("name"));
+					if(comAlarm_more.getAttribute("name") =="comAlarm_more_close"){
+						for(i=0;i<arr.length;i++){
+							if(i>1){
+								arr[i].style.display = "table-row";
+							}
+						}	
+						comAlarm_more.setAttribute("name",'comAlarm_more_open');
+						comAlarm_more.className = "alarm mui-icon mui-icon-arrowdown";
+					}else if(comAlarm_more.getAttribute("name") =="comAlarm_more_open"){
+						for(i=0;i<arr.length;i++){
+							if(i>1){
+								arr[i].style.display = "none";	
+							}
+						}
+						comAlarm_more.setAttribute("name",'comAlarm_more_close');
+						comAlarm_more.className = "alarm mui-icon mui-icon-arrowup";
+					}
+				});
+				
+				//'数据异常'添加列表项的点击事件
+				var dataAlarm_more = document.getElementById("dataAlarm_more");
+				mui('.mui-content').on('tap', '#dataAlarm_more', function(e) {
+					var arr = document.getElementsByClassName("dataAlarmLi");
+					
+					if(dataAlarm_more.getAttribute("name") =="dataAlarm_more_close"){
+						for(i=0;i<arr.length;i++){
+							if(i>2){
+								arr[i].style.display = "table-row";
+							}
+						}
+						dataAlarm_more.setAttribute("name",'dataAlarm_more_open');
+						dataAlarm_more.className = "alarm mui-icon mui-icon-arrowdown";
+					}else if(dataAlarm_more.getAttribute("name") =="dataAlarm_more_open"){
+						for(i=0;i<arr.length;i++){
+							if(i>2){
+								arr[i].style.display = "none";	
+							}
+						}
+						dataAlarm_more.setAttribute("name",'dataAlarm_more_close');
+						dataAlarm_more.className = "alarm mui-icon mui-icon-arrowup";
+					}
+				});
+				
+				mui('.mui-content').on('tap', '.alarmDetail', function() {
+					var detailPage  = plus.webview.getWebviewById('detail.html');
+				    var f_comid = this.getAttribute('attri_comid');
+				    var f_pars  = this.getAttribute('attri_pars');
+				    
+				    console.log(f_comid + ' ' + f_pars);
+			
+				    //if(!detailPage){
+				    //	detailPage = plus.webview.getWebviewById('detail.html');
+				    //}
+				    //触发detail页面的newsId事件
+				    mui.fire(detailPage,'Parameters',{
+				    	r_comid:f_comid,
+				    	r_pars :f_pars
+				    });       
+				  	mui.openWindow({
+				  		url:'detail.html',
+				    	id:'detail.html'
+				  	});
+				});
+				
+
+			})(mui);
+
+		</script>
+	</body>
+
+</html>

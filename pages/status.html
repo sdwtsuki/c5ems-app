@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<link href="../css/diy.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				
+			}
+		</style>
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_status">
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig:{
+				    swipe: false, //关闭右划
+				}
+			})
+		</script>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title titletext">
+				<a id="title" name="close" class="" href="#">实时状态<span id="icon" class="mui-icon mui-icon-arrowdown"></span></a>
+		    </h1>
+		    <div id="xiala">
+		    	<!--<li class="mui-table-view-cell" id="12">12楼</li>-->
+		    </div>
+		    
+		</header>
+		<div class="mui-content">
+			
+			
+			
+			<!--列表-->
+			<div id="option_main" class="maindiv" >
+				
+				
+				
+				
+			<!--<div class="option_child2" id="">
+					1
+				</div>
+				<div class="option_child2" id="">
+					2
+				</div>
+				<div class="option_child2" id="">
+					3
+				</div>-->
+			</div>
+			
+			<div style="width:100%;height: 10px;"></div>
+			
+			
+			
+		</div>
+		
+		
+		<script type="text/javascript">
+		//ajax
+		(function($) {
+			$.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+	
+					mui.preload({
+						url:'detail.html',
+					    id:'detail.html',
+					    styles:{  
+						    top:'0px',//新页面顶部位置  
+						    bottom:'51px',//新页面底部位置  
+						}
+					});
+					
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					} else {
+						//调用接口数据的入口方法
+						status_getFloor();
+						getStatus();
+					}
+				});
+			}
+			
+			//标题列表动态加载
+			var status_getFloor = function() {
+				var t_preuri = plus.storage.getItem("g_preuri");
+				var url = t_preuri + "app_floor.php";  //测试服务器地址
+				var t_user = plus.storage.getItem("g_user");
+				var data = {
+					user: t_user,
+					author: "gzdayou",
+					description: "最好的HTML5社区..."
+				}; 
+				//	respnoseEl.innerHTML = '正在请求中...';
+				$.post(url, data, success_getFloor, 'json');
+			};
+
+			//	var respnoseEl = document.getElementById("records_count");
+			var list = document.getElementById("list");
+			//成功响应的回调函数
+			var success_getFloor = function(response) {
+				var str = JSON.stringify(response);
+				//console.log(str);
+				var option_main = document.getElementById("option_main");
+				//	respnoseEl.innerHTML = "总记录：" + response.count;
+				var i =0;
+				mui.each(response.records, function(key, elem) {
+					//console.log("elem.name:" + elem.Address );
+					
+					
+					var li = document.createElement("li");
+					li.className ="mui-table-view-cell commontext";
+					li.setAttribute("id",elem.id);
+					li.innerHTML = elem.address;
+					document.getElementById("xiala").appendChild(li);
+					if(i==0){
+						localStorage.setItem("status_attri_ID",elem.id);
+					}
+					i++;
+					
+					
+				});
+			};
+			
+			
+			
+			function getStatus(lou_Floor)
+			{
+				if(network){
+					ajax(lou_Floor);
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			}
+			
+			//从c5_device获得数据并添加devicelist
+			var ajax = function(lou_Floor) {
+				var t_preuri = plus.storage.getItem("g_preuri");
+				var url = t_preuri + "app_status.php";  //测试服务器地址
+				var t_user = plus.storage.getItem("g_user");
+				//alert(lou_Floor);
+				
+				if(lou_Floor == undefined){
+					lou_Floor =localStorage.getItem("status_attri_ID");
+				}
+				
+				var data = {
+					user: t_user,	
+					louFloor:lou_Floor,
+					author: "gzdayou",
+					description: "最好的HTML5社区..."
+				}; 
+				//	respnoseEl.innerHTML = '正在请求中...';
+				$.post(url, data, success, 'json');
+			};
+
+			//	var respnoseEl = document.getElementById("records_count");
+			var list = document.getElementById("list");
+			//成功响应的回调函数
+			var success = function(response) {
+				var str = JSON.stringify(response);
+				//console.log(str);
+				var option_main = document.getElementById("option_main");
+				//	respnoseEl.innerHTML = "总记录：" + response.count; 
+				
+				
+				document.getElementById("option_main").innerHTML = "";
+				
+				mui.each(response.records, function(key, elem) {
+					//console.log("elem.name:" + elem.Address );
+				//	alert(elem.ComID);
+					var div = document.createElement("div");
+					div.setAttribute("class","secondarydiv");
+				
+				
+				
+					var divc = document.createElement("div");
+					divc.setAttribute("class","secondarydiv_div");
+					divc.className = "device_status " + elem.commstatus;
+					divc.setAttribute("status",elem.commstatus);
+					
+					div.appendChild(divc);
+					
+					if(divc.getAttribute("status")=="red"){
+						if(localStorage.getItem("alarm_color") == null){
+							divc.className = "device_status secondarydiv_div commontext red ";//默认异常颜色 红色
+						}else{
+							divc.className = "device_status secondarydiv_div commontext";
+							divc.style.backgroundColor = localStorage.getItem('alarm_color');	
+						}
+					}else if(divc.getAttribute("status")=="green"){
+						divc.className = "device_status secondarydiv_div commontext green ";
+					}
+					divc.setAttribute("attri_comid",elem.ComID);
+					divc.setAttribute("attri_pars",elem.Address +','+ elem.energytype);	
+					
+					divc.innerHTML = elem.Address;
+					option_main.appendChild(div);
+					//console.log(localStorage.getItem("alarm_color"));
+					
+					//document.getElementsByClassName("red").style.background-color = 
+				});
+			};
+			
+			
+			//标题下拉选项
+			var title = document.getElementById("title");
+
+			mui('.mui-title').on('tap', '#title', function(e) {
+				if(title.name =="close"){
+					title.setAttribute("name",'open');
+					document.getElementById("icon").className = "mui-icon mui-icon-arrowup";
+					document.getElementById("xiala").style.display = "block";
+					document.getElementById("option_main").style.overflow="hidden";
+					//document.getElementById("zhezhao").style.display = "block";
+				}else if(title.name =="open"){
+					title.setAttribute("name",'close');
+					document.getElementById("icon").className = "mui-icon mui-icon-arrowdown";
+					document.getElementById("xiala").style.display = "none";
+					document.getElementById("option_main").style.overflow="auto";
+					//document.getElementById("zhezhao").style.display = "none";
+				}
+			});
+			//标题下拉选项选择内容
+			mui('.mui-bar-nav').on('tap', 'li', function() {
+				var attri_louFloor = "";
+				attri_louFloor = this.getAttribute("id");
+				document.getElementById("option_main").innerHTML = "";
+				getStatus(attri_louFloor);
+				//alert(li_id);
+	
+				document.getElementById("xiala").style.display = "none";
+				document.getElementById("option_main").style.overflow="auto";
+				title.setAttribute("name",'close');
+				document.getElementById("icon").className = "mui-icon mui-icon-arrowdown";
+			});
+			
+			
+		})(mui);
+		
+		
+		mui('#option_main').on('tap', '.device_status', function() {
+			var detailPage  = plus.webview.getWebviewById('detail.html');
+		    var f_comid = this.getAttribute('attri_comid');
+		    var f_pars  = this.getAttribute('attri_pars');
+		    
+		    console.log(f_comid + ' ' + f_pars);
+
+		    //if(!detailPage){
+		    //	detailPage = plus.webview.getWebviewById('detail.html');
+		    //}
+		    //触发detail页面的newsId事件
+		    mui.fire(detailPage,'Parameters',{
+		    	r_comid:f_comid,
+		    	r_pars :f_pars
+		    });       
+		  	mui.openWindow({
+		  		url:'detail.html',
+		    	id:'detail.html'
+		  	});
+		});
+		
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link id="style_set" rel="stylesheet" href="../css/style_medium.css">
+		<style>
+			
+		</style>
+		
+		<script type="text/javascript">
+			var style_set = document.getElementById("style_set");
+			style_set.setAttribute("href","../css/"+ localStorage.getItem('styleSize') +".css");
+		</script>
+	</head>
+
+	<body id="Page_announcement_detail">
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title titletext">新闻详情</h1>
+		</header>
+		
+		<div class="mui-content">
+		    <div id="news_detail"  cellspacing="" cellpadding="" style="width: 100%;">
+		    	
+		    		<!--<h4 class="news_h4" >习近平首次沙场阅兵 号令解放军向世界一流军队进发</h4>
+		    		<div id="news" class="news_div">
+		    			
+		    			<p>
+		    				[环球网综合报道]针对有香港媒体28日发表文章提及有大陆学者建议筹组“台湾特区委员会”及试行“台湾特区护照”，台湾方面陆委会30日发出新闻稿回应称，“两岸人民关系条例第9条之1规定，台湾人民不得领用中国大陆护照，如违反规定将丧失台湾地区人民身份及相关权益。”
+		    			</p>
+		    			<p>
+		    				台湾“中央社”7月30日报道称，台湾陆委会当日发出新闻稿称，依“台湾地区与大陆地区人民关系条例”（“两岸人民关系条例”）第33条规定，台湾人民不得担任中国大陆党务、军事、行政或具政治性机关（构）、团体的职务或为其成员；如违反规定，视身份为公务员或一般人民，将有刑事责任或行政罚锾。
+		    			</p>
+		    			<p>
+		    				其实，这种针对性的“限制”对蔡当局而言已经不是什么新鲜事，就在本月6日，台湾行政部门为强化退离职公务员及军职人员登陆的管理规范，通过了陆委会提报修改“两岸人民关系条例”，规定退离职军公人员登陆许可管制年限，从原则3年，原服务机关得增减之，修正为管制年限至少3年，原服务机关只能增加、不能缩减。
+		    			</p>
+		    			<div>
+		    				<img src="../images/green_energy1.jpg" style="width: 320px;"/>
+		    			</div>
+		    			<p>
+		    				而国台办发言人马晓光早前也曾表示，1949年以来，尽管海峡两岸尚未统一，但大陆和台湾同属一个中国的事实从未改变，也不可能改变。在统一之前，在处理两岸关系事务中，特别是在两岸谈判中，坚持一个中国原则，就是坚持世界上只有一个中国，大陆和台湾同属一个中国，中国的主权和领土完整不容分割。至于两岸长期存在的政治分歧，我们一贯主张，可以在一个中国基础上，通过平等协商寻求解决之道。
+		    			</p>
+		    			<p>
+		    				
+		    			</p>
+		    			
+		    		</div>
+		    		<div id="">
+		    			
+		    		</div>-->
+		    </div>
+		</div>
+		<script type="text/javascript">
+			//添加newId自定义事件监听
+			window.addEventListener('Parameters',function(event){
+			    //获得事件参数
+			  	var new_id = event.detail.new_id;
+			  
+				//alert(new_id);
+			  	
+			  	//var f_pars_array = new Array(); 
+			 	//f_pars_array = f_pars.split(',');
+				//var t_address   = f_pars_array[0];
+				    
+				    
+			  	//根据comid向服务器请求历史列表
+				//var ele_title = document.getElementById("title");
+				//ele_title.innerHTML = t_address + "历史数据";
+				
+			  	//ajax
+				(function($) {
+					$.init({
+						swipeBack:true //启用右滑关闭功能
+					});
+					var network = true;
+					if(mui.os.plus){
+						mui.plusReady(function () {
+							if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+								network = false;
+							} else {
+								//调用接口数据的入口方法
+								getList();
+							}
+						});
+					}
+				
+					function getList()
+					{
+						if(network){
+							ajax();
+						}else{
+							mui.toast("当前网络不给力，请稍后再试");
+						}
+					}
+				
+				
+					var ajax = function() {
+						var t_preuri = plus.storage.getItem("g_preuri");
+						var url = t_preuri + "app_news_detail.php";  //测试服务器地址 
+						var t_user = plus.storage.getItem("g_user");
+						var data = {
+								new_id:new_id
+						};
+						//respnoseEl.innerHTML = '正在请求中...';
+						$.post(url, data, success, 'json');
+					};
+
+					//成功响应的回调函数
+					var success = function(response) {
+						var str = JSON.stringify(response);
+						//alert(response.title);
+						//console.log(str);
+						//respnoseEl.innerHTML = "总记录：" + response.count;
+						
+						
+						var row = 0 ;
+					//	mui.each(response, function(key, elem) {		
+							//alert(elem.title);
+							
+							document.getElementById("news_detail").innerHTML = "";
+							var h4 = document.createElement("h4");
+							h4.className = "news_h4 commontext";
+							h4.innerHTML = response.title;
+							document.getElementById("news_detail").appendChild(h4);
+							
+							var div = document.createElement("div");
+							div.className = "news_div commontext";
+							div.innerHTML = response.content;
+							document.getElementById("news_detail").appendChild(div);
+							
+					//	});
+						//console.log("list" + list.innerHTML );
+					};
+			
+				})(mui);
+			});
+		</script>
+			
+			
+	</body>
+
+</html>
